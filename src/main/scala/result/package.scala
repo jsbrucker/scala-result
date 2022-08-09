@@ -14,43 +14,52 @@
   * A simple function returning [[Result]] might be defined and used like so:
   *
   * {{{
-  * sealed trait MajorVersion
-  * object MajorVersion {
-  *   case object V1 extends MajorVersion
-  *   case object V2 extends MajorVersion
-  * }
+  * >>> import result._
+  * >>> sealed trait MajorVersion
+  * >>> object MajorVersion {
+  * ...   case object V1 extends MajorVersion
+  * ...   case object V2 extends MajorVersion
+  * ... }
   *
-  * sealed trait ParseError
-  * object ParseError {
-  *   case object InvalidHeaderLength extends ParseError
-  *   case object UnsupportedVersion extends ParseError
-  * }
+  * >>> sealed trait ParseError
+  * >>> object ParseError {
+  * ...  case object InvalidHeaderLength extends ParseError
+  * ...  case object UnsupportedVersion extends ParseError
+  * ... }
   *
-  * def parseMajorVersion(header: List[Int]): Result[MajorVersion, ParseError] =
-  *   header.headOption match {
-  *     case None    => Err(ParseError.InvalidHeaderLength)
-  *     case Some(1) => Ok(MajorVersion.V1)
-  *     case Some(2) => Ok(MajorVersion.V2)
-  *     case _       => Err(ParseError.UnsupportedVersion)
-  *   }
+  * >>> def parseMajorVersion(header: List[Int]): Result[MajorVersion, ParseError] =
+  * ...   header.headOption match {
+  * ...     case None    => Err(ParseError.InvalidHeaderLength)
+  * ...     case Some(1) => Ok(MajorVersion.V1)
+  * ...     case Some(2) => Ok(MajorVersion.V2)
+  * ...     case _       => Err(ParseError.UnsupportedVersion)
+  * ...   }
   *
-  * val version = parseMajorVersion(List(1, 2, 3, 4))
-  * version match {
-  *   case Ok(v)  => println(s"working with version: \$v")
-  *   case Err(e) => println(s"error parsing header: \$e")
-  * }
+  * >>> val version = parseMajorVersion(List(1, 2, 3, 4))
+  * >>> version match {
+  * ...   case Ok(v)  => "working with version: " + v.toString
+  * ...   case Err(e) => "error parsing header: " + e.toString
+  * ... }
+  * working with version: V1
+  *
   * }}}
   *
   * Pattern matching on [[Result]]s is clear and straightforward for simple cases, but [[Result]] comes with some
   * convenience methods that make working with it more succinct.
   *
   * {{{
-  * val goodResult: Result[Int, String] = Ok(10);
-  * val badResult: Result[Int, String] = Err("Some Error");
+  * >>> import result._
+  * >>> val goodResult: Result[Int, String] = Ok(10);
+  * >>> val badResult: Result[Int, String] = Err("Some Error")
   *
   * // The `isOk` and `isErr` methods do what they say.
-  * assert(goodResult.isOk && !goodResult.isErr)
-  * assert(badResult.isErr && !badResult.isOk)
+  *
+  * >>> goodResult.isOk && !goodResult.isErr
+  * true
+  *
+  * >>> badResult.isErr && !badResult.isOk
+  * true
+  *
   * }}}
   *
   * =Method overview=

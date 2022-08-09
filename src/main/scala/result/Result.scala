@@ -12,11 +12,13 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * val x: Result[Int, String] = Ok(-3)
-    * assert(x.isOk == true)
+    * >>> val x: Result[Int, String] = Ok(-3)
+    * >>> x.isOk
+    * true
     *
-    * val y: Result[Int, String] = Err("Some error message")
-    * assert(y.isOk == false)
+    * >>> val y: Result[Int, String] = Err("Some error message")
+    * >>> y.isOk
+    * false
     * }}}
     */
   def isOk: Boolean
@@ -26,14 +28,17 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * val x: Result[Int, String] = Ok(2)
-    * assert(x.isOkAnd(_ > 1) == true)
+    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> x.isOkAnd(_ > 1)
+    * true
     *
-    * val y: Result[Int, String] = Ok(0)
-    * assert(y.isOkAnd(_ > 1) == false)
+    * >>> val y: Result[Int, String] = Ok(0)
+    * >>> y.isOkAnd(_ > 1)
+    * false
     *
-    * val z: Result[Int, String] = Err("hey")
-    * assert(z.isOkAnd(_ > 1) == false)
+    * >>> val z: Result[Int, String] = Err("hey")
+    * >>> z.isOkAnd(_ > 1)
+    * false
     * }}}
     */
   def isOkAnd(f: T => Boolean): Boolean
@@ -43,11 +48,13 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * val x: Result[Int, String] = Ok(-3)
-    * assert(x.isErr == false)
+    * >>> val x: Result[Int, String] = Ok(-3)
+    * >>> x.isErr
+    * false
     *
-    * val y: Result[Int, String] = Err("Some error message")
-    * assert(y.isErr == true)
+    * >>> val y: Result[Int, String] = Err("Some error message")
+    * >>> y.isErr
+    * true
     * }}}
     */
   def isErr: Boolean
@@ -57,14 +64,17 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * val x: Result[String, Int] = Err(2)
-    * assert(x.isErrAnd(_ > 1) == true)
+    * >>> val x: Result[String, Int] = Err(2)
+    * >>> x.isErrAnd(_ > 1)
+    * true
     *
-    * val y: Result[String, Int] = Err(0)
-    * assert(y.isErrAnd(_ > 1) == false)
+    * >>> val y: Result[String, Int] = Err(0)
+    * >>> y.isErrAnd(_ > 1)
+    * false
     *
-    * val z: Result[String, Int] = Ok("Some success string")
-    * assert(z.isErrAnd(_ > 1) == false)
+    * >>> val z: Result[String, Int] = Ok("Some success string")
+    * >>> z.isErrAnd(_ > 1)
+    * false
     * }}}
     */
   def isErrAnd(f: E => Boolean): Boolean
