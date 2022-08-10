@@ -78,6 +78,82 @@ sealed trait Result[+T, +E] extends Any {
     * }}}
     */
   def isErrAnd(f: E => Boolean): Boolean
+
+  /** Converts from [[Result]]`[T, E]` to `Option[T]`.
+    *
+    * Converts `this` into an `Option[T]`, discarding the error, if any.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> x.ok == Some(2)
+    * true
+    *
+    * >>> val y: Result[Int, String] = Err("Nothing here")
+    * >>> y.ok == None
+    * true
+    * }}}
+    */
+  final def ok: Option[T] = this match {
+    case Ok(v) => Some(v)
+    case _     => None
+  }
+
+  /** Converts from [[Result]]`[T, E]` to `Option[E]`.
+    *
+    * Converts `this` into an `Option[E]`, discarding the success value, if any.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> x.err == None
+    * true
+    *
+    * >>> val y: Result[Int, String] = Err("Nothing here")
+    * >>> y.err == Some("Nothing here")
+    * true
+    * }}}
+    */
+  final def err: Option[E] = this match {
+    case Err(e) => Some(e)
+    case _      => None
+  }
+
+  /** Transposes a [[Result]] of an `Option` into an `Option` of a [[Result]].
+    *
+    * `Ok(None)` will be mapped to `None`.
+    * `Ok(Some(_))` and `Err(_)` will be mapped to `Some(Ok(_))` and `Some(Err(_))`.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x1: Result[Option[Int], String] = Ok(Some(5))
+    * >>> val x2: Option[Result[Int, String]] = Some(Ok(5))
+    * >>> x1.transpose == x2
+    * true
+    *
+    * >> val y1: Result[Option[Int], String] = Ok(None)
+    * >> val y2: Option[Result[Int, String]] = None
+    * >> y1.transpose == y2
+    * true
+    *
+    * >>> val z1: Result[Option[Int], String] = Err("Some Error")
+    * >>> val z2: Option[Result[Int, String]] = Some(Err("Some Error"))
+    * >>> z1.transpose == z2
+    * true
+    * }}}
+    */
+  final def transpose[U](implicit ev: T <:< Option[U]): Option[Result[U, E]] =
+    this match {
+      case Ok(option) =>
+        ev(option) match {
+          case Some(x) => Some(Ok(x))
+          case None    => None
+        }
+      case Err(e) => Some(Err(e))
+    }
 }
 
 /** Contains the success value */

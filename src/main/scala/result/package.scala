@@ -71,8 +71,18 @@
   * The [[Result.isOk isOk]] and [[Result.isErr isErr]] methods return `true` if the [[Result]] is [[Ok]] or [[Err]],
   * respectively.
   *
-  * The [[Result.isOkAnd isOkAnd]] and [[Result.isErrAnd isErrAnd]] take in a predicate and return `true` if the
+  * The [[Result.isOkAnd isOkAnd]] and [[Result.isErrAnd isErrAnd]] methods take in a predicate and return `true` if the
   * [[Result]] is [[Ok]] or [[Err]] respectively, and the predicate returns `true` when applied to the contained value.
+  *
+  * ==Transforming contained values==
+  *
+  * These methods transform [[Result]] to `Option`:
+  *
+  *   - [[Result.err err]] transforms [[Result]]`[T, E]` into `Option[E]`,
+  *   mapping [[Err]]`(e)` to `Some(e)` and [[Ok]]`(v)` to `None`
+  *   - [[Result.ok ok]] transforms [[Result]]`[T, E]` into `Option[T]`,
+  *   mapping [[Ok]]`(v)` to `Some(v)` and [[Err]]`(e)` to `None`
+  *   - [[Result.transpose transpose]] transposes a [[Result]] of an `Option` into an `Option` of a [[Result]]
   *
   * @note
   * This documentation is a derivative of the [[https://doc.rust-lang.org/std/result/ Rust Result<T, E> documentation]]
