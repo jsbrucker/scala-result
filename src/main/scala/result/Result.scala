@@ -11,6 +11,8 @@ package result
   * @groupprio Extract 1
   * @groupname Option Transform variant to Option
   * @groupprio Option 2
+  * @groupname Transform Transforming contained values
+  * @groupprio Transform 3
   * @groupname Cast Type-safe casts
   * @groupprio Cast 7
   */
@@ -325,6 +327,112 @@ sealed trait Result[+T, +E] extends Any {
         }
       case Err(e) => Some(Err(e))
     }
+
+  /** Maps a [[Result]]`[T, E]` to [[Result]]`[U, E]` by applying a function to a contained [[Ok]] value, leaving an
+    * [[Err]] value untouched.
+    *
+    * This function can be used to compose the results of two functions.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> def toInt(c: Char) = if (c.isDigit) Ok(c.asDigit) else Err("Not a digit")
+    * >>> def square(i: Int) = i * i
+    *
+    * >>> toInt('1').map(square(_))
+    * Ok(1)
+    *
+    * >>> toInt('2').map(square(_))
+    * Ok(4)
+    *
+    * >>> toInt('A').map(square(_))
+    * Err(Not a digit)
+    * }}}
+    *
+    * @group Transform
+    */
+  def map[U](op: T => U): Result[U, E] = this match {
+    case Ok(t)  => Ok(op(t))
+    case Err(e) => Err(e)
+  }
+
+  /** Returns the provided default (if [[Err]]), or applies a function to the contained value (if [[Ok]]),
+    *
+    * Arguments passed to `mapOr` are eagerly evaluated; if you are passing the result of a function call, it is
+    * recommended to use [[mapOrElse]], which is lazily evaluated.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[String, String] = Ok("foo")
+    * >>> x.mapOr(42, _.size)
+    * 3
+    *
+    * >>> val y: Result[String, String] = Err("bar")
+    * >>> y.mapOr(42, _.size)
+    * 42
+    * }}}
+    *
+    * @group Transform
+    */
+  def mapOr[U](default: U, f: T => U): U = this match {
+    case Ok(t)  => f(t)
+    case Err(_) => default
+  }
+
+  /** Maps a [[Result]]`[T, E]` to `U` by applying fallback function default to a contained [[Err]] value, or function
+    * `f` to a contained [[Ok]] value.
+    *
+    * This function can be used to unpack a successful result
+    * while handling an error.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val k = 21
+    *
+    * >>> val x: Result[String, String] = Ok("foo")
+    * >>> x.mapOrElse(_ => k * 2, _.size)
+    * 3
+    *
+    * >>> val y: Result[String, String] = Err("bar")
+    * >>> y.mapOrElse(_ => k * 2, _.size)
+    * 42
+    * }}}
+    *
+    * @group Transform
+    */
+  def mapOrElse[U](default: E => U, f: T => U): U = this match {
+    case Ok(t)  => f(t)
+    case Err(e) => default(e)
+  }
+
+  /** Maps a [[Result]]`[T, E]` to [[Result]]`[T, F]` by applying a function to a contained [[Err]] value, leaving an
+    * [[Ok]] value untouched.
+    *
+    * This function can be used to pass through a successful result while handling an error.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> def square(i: Int) = i * i
+    *
+    * >>> Err(1).mapErr(square(_))
+    * Err(1)
+    *
+    * >>> Err(2).mapErr(square(_))
+    * Err(4)
+    *
+    * >>> Ok[String, Int]("Some Value").mapErr(square(_))
+    * Ok(Some Value)
+    * }}}
+    *
+    * @group Transform
+    */
+  def mapErr[F](op: E => F): Result[T, F] = this match {
+    case Ok(t)  => Ok(t)
+    case Err(e) => Err(op(e))
+  }
 
   /** Upcasts this `Result[T, E]` to `Result[U, E]`
     *

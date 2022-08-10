@@ -60,6 +60,13 @@
   * >>> badResult.isErr && !badResult.isOk
   * true
   *
+  * // `map` replaces the `Ok` value of a `Result` with the result of the provided function
+  * >>> goodResult.map(_ + 1)
+  * Ok(11)
+  *
+  * // `map` leaves an `Err` value of a `Result` as it was, ignoring the provided function
+  * >>> badResult.map(_ - 1)
+  * Err(Some Error)
   * }}}
   *
   * =Method overview=
@@ -83,6 +90,26 @@
   *   - [[Result.ok ok]] transforms [[Result]]`[T, E]` into `Option[T]`,
   *   mapping [[Ok]]`(v)` to `Some(v)` and [[Err]]`(e)` to `None`
   *   - [[Result.transpose transpose]] transposes a [[Result]] of an `Option` into an `Option` of a [[Result]]
+  *
+  * This method transforms the contained value of the [[result.Ok Ok]] variant:
+  *
+  *   - [[Result.map map]] transforms [[Result]]`[T, E]` into [[Result]]`[U, E]` by
+  *   applying the provided function to the contained value of [[result.Ok Ok]] and leaving [[result.Err Err]] values
+  *   unchanged
+  *
+  * This method transforms the contained value of the [[result.Err Err]] variant:
+  *
+  *   - [[Result.mapErr mapErr]] transforms [[Result]]`[T, E]` into
+  *   [[Result]]`[T, F]` by applying the provided function to the contained value of [[result.Err Err]]
+  *   and leaving [[result.Ok Ok]] values unchanged
+  *
+  * These methods transform a [[Result]]`[T, E]` into a value of a possibly
+  * different type `U`:
+  *
+  *   - [[Result.mapOr mapOr]] applies the provided function to the contained value of [[result.Ok Ok]], or
+  *   returns the provided default value if the [[Result]] is [[result.Err Err]]
+  *   - [[Result.mapOrElse mapOrElse]] applies the provided function to the contained value of [[result.Ok Ok]],
+  *   or applies the provided default fallback function to the contained value of [[result.Err Err]]
   *
   * ==Extracting contained values==
   *
