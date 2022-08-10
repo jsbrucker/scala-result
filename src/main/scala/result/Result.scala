@@ -488,6 +488,70 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => Err(op(e))
   }
 
+  /** Converts from `Result[Result[T, E], E]` to `Result[T, E]`
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Result[String, Int], Int] = Ok(Ok("hello"))
+    * >>> x.flatten
+    * Ok(hello)
+    *
+    * >>> val y: Result[Result[String, Int], Int] = Ok(Err(6))
+    * >>> y.flatten
+    * Err(6)
+    *
+    * >>> val z: Result[Result[String, Int], Int] = Err(6)
+    * >>> z.flatten
+    * Err(6)
+    *
+    * // Flattening only removes one level of nesting at a time:
+    * >>> val multi: Result[Result[Result[String, Int], Int], Int] = Ok(Ok(Ok("hello")))
+    *
+    * >>> multi.flatten
+    * Ok(Ok(hello))
+    *
+    * >>> multi.flatten.flatten
+    * Ok(hello)
+    * }}}
+    *
+    * @group Transform
+    */
+  def flatten[U, F >: E](implicit ev: T <:< Result[U, F]): Result[U, F] =
+    andThen(ev)
+
+  /** Converts from `Result[T, Result[T, E]]` to `Result[T, E]`
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Int, Result[Int, String]] = Err(Err("Some Error"))
+    * >>> x.flattenErr
+    * Err(Some Error)
+    *
+    * >>> val y: Result[Int, Result[Int, String]] = Err(Ok(6))
+    * >>> y.flattenErr
+    * Ok(6)
+    *
+    * >>> val z: Result[Int, Result[Int, String]] = Ok(6)
+    * >>> z.flattenErr
+    * Ok(6)
+    *
+    * // Flattening only removes one level of nesting at a time:
+    * >>> val multi: Result[Int, Result[Int, Result[Int, String]]] = Err(Err(Err("Some Error")))
+    *
+    * >>> multi.flattenErr
+    * Err(Err(Some Error))
+    *
+    * >>> multi.flattenErr.flattenErr
+    * Err(Some Error)
+    * }}}
+    *
+    * @group Transform
+    */
+  def flattenErr[U >: T, F](implicit ev: E <:< Result[U, F]): Result[U, F] =
+    orElse(ev)
+
   /** Returns `rhs` if the result is [[Ok]], otherwise returns this [[Err]] value.
     *
     * ==Examples==
@@ -552,16 +616,10 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => Err(e)
   }
 
-  /** An alias of [[andThen]] for compatibility with for-comprehensions
-    *
-    * @group Misc
-    */
-  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
-
   /** Returns `rhs` if the [[Result]] is [[Err]], otherwise returns the this [[Ok]] value.
     *
     * Arguments passed to `or` are eagerly evaluated; if you are passing the result of a function call, it is
-    * recommended to use [[Result.orElse orElse]], which is lazily evaluated.
+    * recommended to use [[orElse orElse]], which is lazily evaluated.
     *
     * ==Examples==
     *
@@ -623,6 +681,18 @@ sealed trait Result[+T, +E] extends Any {
     case Ok(t)  => Ok(t)
     case Err(e) => op(e)
   }
+
+  /** An alias of [[andThen]] for compatibility with for-comprehensions and consistency with Scala naming
+    *
+    * @group Misc
+    */
+  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
+
+  /** An alias of [[orElse]] for consistency with Scala naming (`Err` suffix required for disambiguation)
+    *
+    * @group Misc
+    */
+  def flatMapErr[U >: T, F](op: E => Result[U, F]): Result[U, F] = orElse(op)
 
   /** Upcasts this `Result[T, E]` to `Result[U, E]`
     *
