@@ -13,8 +13,12 @@ package result
   * @groupprio Option 2
   * @groupname Transform Transforming contained values
   * @groupprio Transform 3
+  * @groupname Boolean Boolean operators
+  * @groupprio Boolean 4
   * @groupname Cast Type-safe casts
   * @groupprio Cast 7
+  * @groupname Misc Miscellaneous methods
+  * @groupprio Misc 8
   */
 sealed trait Result[+T, +E] extends Any {
 
@@ -97,6 +101,56 @@ sealed trait Result[+T, +E] extends Any {
     * @group Query
     */
   def isErrAnd(f: E => Boolean): Boolean
+
+  /** Returns `true` if the result is an [[Ok]] value containing the given value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> x.contains(2)
+    * true
+    *
+    * >>> val y: Result[Int, String] = Ok(3)
+    * >>> y.contains(2)
+    * false
+    *
+    * >>> val z: Result[Int, String] = Err("Some error message")
+    * >>> z.contains(2)
+    * false
+    * }}}
+    *
+    * @group Query
+    */
+  def contains[U >: T](x: U): Boolean = this match {
+    case Err(_) => false
+    case Ok(v)  => v == x
+  }
+
+  /** Returns `true` if the result is an [[Err]] value containing the given value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> x.containsErr("Some error message")
+    * false
+    *
+    * >>> val y: Result[Int, String] = Err("Some error message")
+    * >>> y.containsErr("Some error message")
+    * true
+    *
+    * >>> val z: Result[Int, String] = Err("Some other error message")
+    * >>> z.containsErr("Some error message")
+    * false
+    * }}}
+    *
+    * @group Query
+    */
+  def containsErr[U >: E](x: U): Boolean = this match {
+    case Err(e) => x == e
+    case Ok(_)  => false
+  }
 
   /** Returns the contained [[Ok]] value.
     *
@@ -432,6 +486,142 @@ sealed trait Result[+T, +E] extends Any {
   def mapErr[F](op: E => F): Result[T, F] = this match {
     case Ok(t)  => Ok(t)
     case Err(e) => Err(op(e))
+  }
+
+  /** Returns `rhs` if the result is [[Ok]], otherwise returns this [[Err]] value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x1: Result[Int, String] = Ok(2)
+    * >>> val y1: Result[String, String] = Err("late error")
+    * >>> x1.and(y1)
+    * Err(late error)
+    *
+    * >>> val x2: Result[Int, String] = Err("early error")
+    * >>> val y2: Result[String, String] = Ok("foo")
+    * >>> x2.and(y2)
+    * Err(early error)
+    *
+    * >>> val x3: Result[Int, String] = Err("not a 2")
+    * >>> val y3: Result[String, String] = Err("late error")
+    * >>> x3.and(y3)
+    * Err(not a 2)
+    *
+    * >>> val x4: Result[Int, String] = Ok(2)
+    * >>> val y4: Result[String, String] = Ok("different result type")
+    * >>> x4.and(y4)
+    * Ok(different result type)
+    * }}}
+    *
+    * @group Boolean
+    */
+  def and[U >: T, F >: E](rhs: Result[U, F]): Result[U, F] = this match {
+    case Ok(_)  => rhs
+    case Err(e) => Err(e)
+  }
+
+  /** Calls `op` if the [[Result]] is [[Ok]], otherwise returns this [[Err]] value.
+    *
+    * This function can be used for control flow based on `Result` values. Often used to chain fallible operations that
+    * may return [`Err`].
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> def ensureEven(x: Int): Result[Int, String] = if (x % 2 == 0) Ok(x) else Err("Odd Number")
+    * >>> def ensurePositive(x: Int): Result[Int, String] = if (x > 0) Ok(x) else Err("Not Positive")
+    *
+    * >>> Ok(2).andThen(ensureEven).andThen(ensurePositive)
+    * Ok(2)
+    *
+    * >>> Ok(1).andThen(ensureEven).andThen(ensurePositive)
+    * Err(Odd Number)
+    *
+    * >>> Ok(-2).andThen(ensureEven).andThen(ensurePositive)
+    * Err(Not Positive)
+    *
+    * >>> Err("Some Error").andThen(ensureEven).andThen(ensurePositive)
+    * Err(Some Error)
+    * }}}
+    *
+    * @group Boolean
+    */
+  def andThen[U, F >: E](op: T => Result[U, F]): Result[U, F] = this match {
+    case Ok(t)  => op(t)
+    case Err(e) => Err(e)
+  }
+
+  /** An alias of [[andThen]] for compatibility with for-comprehensions
+    *
+    * @group Misc
+    */
+  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
+
+  /** Returns `rhs` if the [[Result]] is [[Err]], otherwise returns the this [[Ok]] value.
+    *
+    * Arguments passed to `or` are eagerly evaluated; if you are passing the result of a function call, it is
+    * recommended to use [[Result.orElse orElse]], which is lazily evaluated.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x1: Result[Int, String] = Ok(2)
+    * >>> val y1: Result[Int, String] = Err("late error")
+    * >>> x1.or(y1)
+    * Ok(2)
+    *
+    * >>> val x2: Result[Int, String] = Err("early error")
+    * >>> val y2: Result[Int, String] = Ok(2)
+    * >>> x2.or(y2)
+    * Ok(2)
+    *
+    * >>> val x3: Result[Int, String] = Err("not a 2")
+    * >>> val y3: Result[Int, String] = Err("late error")
+    * >>> x3.or(y3)
+    * Err(late error)
+    *
+    * >>> val x4: Result[Int, String] = Ok(2)
+    * >>> val y4: Result[Int, String] = Ok(100)
+    * >>> x4.or(y4)
+    * Ok(2)
+    * }}}
+    *
+    * @group Boolean
+    */
+  def or[U >: T, F >: E](rhs: Result[U, F]): Result[U, F] = this match {
+    case Err(_) => rhs
+    case _      => this
+  }
+
+  /** Calls `op` if the result is [[Err]], otherwise returns this [[Ok]] value.
+    *
+    * This function can be used for control flow based on result values.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * >>> def sq(x: Int): Result[Int, Int] = { Ok(x * x) }
+    * >>> def err(x: Int): Result[Int, Int] = { Err(x) }
+    *
+    * >>> Ok(2).orElse(sq).orElse(sq)
+    * Ok(2)
+    *
+    * >>> Ok(2).orElse(err).orElse(sq)
+    * Ok(2)
+    *
+    * >>> Err(3).orElse(sq).orElse(err)
+    * Ok(9)
+    *
+    * >>> Err(3).orElse(err).orElse(err)
+    * Err(3)
+    * }}}
+    *
+    * @group Boolean
+    */
+  def orElse[U >: T, F](op: E => Result[U, F]): Result[U, F] = this match {
+    case Ok(t)  => Ok(t)
+    case Err(e) => op(e)
   }
 
   /** Upcasts this `Result[T, E]` to `Result[U, E]`

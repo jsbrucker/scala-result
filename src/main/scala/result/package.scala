@@ -67,6 +67,18 @@
   * // `map` leaves an `Err` value of a `Result` as it was, ignoring the provided function
   * >>> badResult.map(_ - 1)
   * Err(Some Error)
+  *
+  * // Use `andThen` to continue the computation.
+  * scala> goodResult.andThen(i => Ok(i == 11))
+  * res0: Result[Boolean, String] = Ok(false)
+  *
+  * // Use `orElse` to handle the error.
+  * scala> badResult.orElse {
+  *      |   case "Anticipated Error" => Ok(0)
+  *      |   case "Some Error"        => Err(true)
+  *      |   case _                   => Err(false)
+  *      | }
+  * res1: Result[Int, Boolean] = Err(true)
   * }}}
   *
   * =Method overview=
@@ -81,51 +93,85 @@
   * The [[Result.isOkAnd isOkAnd]] and [[Result.isErrAnd isErrAnd]] methods take in a predicate and return `true` if the
   * [[Result]] is [[Ok]] or [[Err]] respectively, and the predicate returns `true` when applied to the contained value.
   *
+  * The [[Result.contains contains]] and [[Result.containsErr containsErr]] methods take in a value and return `true` if
+  * it matches the inner [[Ok]] or [[Err]] value respectively.
+  *
   * ==Transforming contained values==
   *
   * These methods transform [[Result]] to `Option`:
   *
-  *   - [[Result.err err]] transforms [[Result]]`[T, E]` into `Option[E]`,
-  *   mapping [[Err]]`(e)` to `Some(e)` and [[Ok]]`(v)` to `None`
-  *   - [[Result.ok ok]] transforms [[Result]]`[T, E]` into `Option[T]`,
-  *   mapping [[Ok]]`(v)` to `Some(v)` and [[Err]]`(e)` to `None`
+  *   - [[Result.err err]] transforms [[Result]]`[T, E]` into `Option[E]`, mapping [[Err]]`(e)` to `Some(e)` and
+  *   [[Ok]]`(v)` to `None`
+  *   - [[Result.ok ok]] transforms [[Result]]`[T, E]` into `Option[T]`, mapping [[Ok]]`(v)` to `Some(v)` and
+  *   [[Err]]`(e)` to `None`
   *   - [[Result.transpose transpose]] transposes a [[Result]] of an `Option` into an `Option` of a [[Result]]
   *
   * This method transforms the contained value of the [[result.Ok Ok]] variant:
   *
-  *   - [[Result.map map]] transforms [[Result]]`[T, E]` into [[Result]]`[U, E]` by
-  *   applying the provided function to the contained value of [[result.Ok Ok]] and leaving [[result.Err Err]] values
-  *   unchanged
+  *   - [[Result.map map]] transforms [[Result]]`[T, E]` into [[Result]]`[U, E]` by applying the provided function to
+  *   the contained value of [[Ok]] and leaving [[Err]] values unchanged
   *
   * This method transforms the contained value of the [[result.Err Err]] variant:
   *
-  *   - [[Result.mapErr mapErr]] transforms [[Result]]`[T, E]` into
-  *   [[Result]]`[T, F]` by applying the provided function to the contained value of [[result.Err Err]]
-  *   and leaving [[result.Ok Ok]] values unchanged
+  *   - [[Result.mapErr mapErr]] transforms [[Result]]`[T, E]` into [[Result]]`[T, F]` by applying the provided function
+  *   to the contained value of [[Err]] and leaving [[Ok]] values unchanged
   *
-  * These methods transform a [[Result]]`[T, E]` into a value of a possibly
-  * different type `U`:
+  * These methods transform a [[Result]]`[T, E]` into a value of a possibly different type `U`:
   *
-  *   - [[Result.mapOr mapOr]] applies the provided function to the contained value of [[result.Ok Ok]], or
-  *   returns the provided default value if the [[Result]] is [[result.Err Err]]
-  *   - [[Result.mapOrElse mapOrElse]] applies the provided function to the contained value of [[result.Ok Ok]],
-  *   or applies the provided default fallback function to the contained value of [[result.Err Err]]
+  *   - [[Result.mapOr mapOr]] applies the provided function to the contained value of [[Ok]], or returns the provided
+  *   default value if the [[Result]] is [[Err]]
+  *   - [[Result.mapOrElse mapOrElse]] applies the provided function to the contained value of [[Ok]], or applies the
+  *   provided default fallback function to the contained value of [[Err]]
   *
   * ==Extracting contained values==
   *
-  * These methods extract the contained value in a [[Result]]`[T, E]` when it is the [[result.Ok Ok]]
-  * variant. If the [[Result]] is [[result.Err Err]]:
+  * These methods extract the contained value in a [[Result]]`[T, E]` when it is the [[Ok]]
+  * variant. If the [[Result]] is [[Err]]:
   *
   *   - [[Result.expect expect]] panics with a provided custom message
   *   - [[Result.unwrap unwrap]] panics with a generic message
   *   - [[Result.unwrapOr unwrapOr]] returns the provided default value
   *   - [[Result.unwrapOrElse unwrapOrElse]] returns the result of evaluating the provided function
   *
-  * These methods extract the contained value in a [[Result]]`[T, E]` when it is the [[result.Err Err]]
-  * variant. If the [[Result]] is [[result.Ok Ok]]:
+  * These methods extract the contained value in a [[Result]]`[T, E]` when it is the [[Err]]
+  * variant. If the [[Result]] is [[Ok]]:
   *
   *   - [[Result.expectErr expectErr]] panics with a provided custom message
   *   - [[Result.unwrapErr unwrapErr]] panics with a generic message
+  *
+  * ==Boolean operators==
+  *
+  * These methods treat the [[Result]] as a boolean value, where [[Ok]] acts like `true` and [[Err]] acts like `false`.
+  * There are two categories of these methods: ones that take a [[Result]] as input, and ones that take a function as
+  * input (to be lazily evaluated).
+  *
+  * The [[Result.and and]] and [[Result.or or]] methods take another [[Result]] as input, and produce a [[Result]] as
+  * output. The [[Result.and and]] method can produce a [[Result]]`[U, E]` value having a different inner type `U` than
+  * [[Result]]`[T, E]`. The [[Result.or or]] method can produce a [[Result]]`[T, F]` value having a different error type
+  * `F` than [[Result]]`[T, E]`.
+  *
+  * | method             | self     | input     | output   |
+  * |--------------------|----------|-----------|----------|
+  * | [[Result.and and]] | `Err(e)` | (ignored) | `Err(e)` |
+  * | [[Result.and and]] | `Ok(x)`  | `Err(d)`  | `Err(d)` |
+  * | [[Result.and and]] | `Ok(x)`  | `Ok(y)`   | `Ok(y)`  |
+  * | [[Result.or or]]   | `Err(e)` | `Err(d)`  | `Err(d)` |
+  * | [[Result.or or]]   | `Err(e)` | `Ok(y)`   | `Ok(y)`  |
+  * | [[Result.or or]]   | `Ok(x)`  | (ignored) | `Ok(x)`  |
+  *
+  * The [[Result.andThen andThen]] and [[Result.orElse orElse]] methods take a function as input, and only evaluate the
+  * function when they need to produce a new value. The [[Result.andThen andThen]] method can produce a
+  * [[Result]]`[U, E]` value having a different inner type `U` than [[Result]]`[T, E]`. The [[Result.orElse orElse]]
+  * method can produce a [[Result]]`[T, F]` value having a different error type `F` than [[Result]]`[T, E]`.
+  *
+  * | method                     | self     | function input | function result | output   |
+  * |----------------------------|----------|----------------|-----------------|----------|
+  * | [[Result.andThen andThen]] | `Err(e)` | (not provided) | (not evaluated) | `Err(e)` |
+  * | [[Result.andThen andThen]] | `Ok(x)`  | `x`            | `Err(d)`        | `Err(d)` |
+  * | [[Result.andThen andThen]] | `Ok(x)`  | `x`            | `Ok(y)`         | `Ok(y)`  |
+  * | [[Result.orElse orElse]]   | `Err(e)` | `e`            | `Err(d)`        | `Err(d)` |
+  * | [[Result.orElse orElse]]   | `Err(e)` | `e`            | `Ok(y)`         | `Ok(y)`  |
+  * | [[Result.orElse orElse]]   | `Ok(x)`  | (not provided) | (not evaluated) | `Ok(x)`  |
   *
   * @note
   * This documentation is a derivative of the [[https://doc.rust-lang.org/std/result/ Rust Result<T, E> documentation]]
