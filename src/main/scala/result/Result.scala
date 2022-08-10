@@ -300,6 +300,32 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => e
   }
 
+  /** Returns the contained [[Ok]] value if an [[Ok]], and the contained [[Err]] value if an [[Err]]
+    *
+    * In other words, this function returns the value (the `R`) of a [[Result]]`[R, R]`, regardless of whether or not
+    * that result is [[Ok]] or [[Err]]. This can be useful in rare cases when it doesn't matter whether the result was a
+    * success or failure.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val ok: Result[Int, Int] = Ok(3)
+    * >>> val err: Result[Int, Int] = Err(4)
+    *
+    * >>> ok.intoOkOrErr
+    * 3
+    *
+    * >>> err.intoOkOrErr
+    * 4
+    * }}}
+    *
+    * @group Extract
+    */
+  def intoOkOrErr[R](implicit vr: T <:< R, er: E <:< R): R = this match {
+    case Ok(v)  => vr(v)
+    case Err(e) => er(e)
+  }
+
   /** Converts from [[Result]]`[T, E]` to `Option[T]`.
     *
     * Converts `this` into an `Option[T]`, discarding the error, if any.
