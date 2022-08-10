@@ -11,3 +11,7 @@ libraryDependencies ++= Seq(
 
 doctestTestFramework := DoctestTestFramework.ScalaTest
 doctestScalaTestVersion := Some("3.2.12")
+
+Compile / doc / scalacOptions ++= Seq(
+  "-groups"
+)

@@ -4,6 +4,15 @@ package result
   *
   * [[Result]] is a type that represents either success ([[Ok]]) or failure ([[Err]]).
   * See the [[result package documentation]] for details.
+  *
+  * @groupname Query Querying the variant
+  * @groupprio Query 0
+  * @groupname Extract Extracting contained values
+  * @groupprio Extract 1
+  * @groupname Option Transform variant to Option
+  * @groupprio Option 2
+  * @groupname Cast Type-safe casts
+  * @groupprio Cast 7
   */
 sealed trait Result[+T, +E] extends Any {
 
@@ -20,6 +29,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> y.isOk
     * false
     * }}}
+    *
+    * @group Query
     */
   def isOk: Boolean
 
@@ -40,6 +51,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> z.isOkAnd(_ > 1)
     * false
     * }}}
+    *
+    * @group Query
     */
   def isOkAnd(f: T => Boolean): Boolean
 
@@ -56,6 +69,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> y.isErr
     * true
     * }}}
+    *
+    * @group Query
     */
   def isErr: Boolean
 
@@ -76,6 +91,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> z.isErrAnd(_ > 1)
     * false
     * }}}
+    *
+    * @group Query
     */
   def isErrAnd(f: E => Boolean): Boolean
 
@@ -92,6 +109,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> intercept[RuntimeException](x.expect("Testing expect")).getMessage
     * Testing expect: emergency failure
     * }}}
+    *
+    * @group Extract
     */
   @throws(classOf[RuntimeException])
   def expect(msg: String): T = this match {
@@ -119,6 +138,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> intercept[RuntimeException](y.unwrap).getMessage
     * called `Result::unwrap` on an `Err` value: emergency failure
     * }}}
+    *
+    * @group Extract
     */
   @throws(classOf[RuntimeException])
   def unwrap: T = this match {
@@ -145,6 +166,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> y.unwrapOr(default)
     * 2
     * }}}
+    *
+    * @group Extract
     */
   def unwrapOr[U >: T](default: U): U = this match {
     case Ok(t)  => t
@@ -162,6 +185,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> Err("foo").unwrapOrElse(_.size)
     * 3
     * }}}
+    *
+    * @group Extract
     */
   def unwrapOrElse[U >: T](op: E => U): U = this match {
     case Ok(t)  => t
@@ -181,6 +206,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> intercept[RuntimeException](x.expectErr("Testing expect")).getMessage
     * Testing expect: unexpected success
     * }}}
+    *
+    * @group Extract
     */
   def expectErr(msg: String): E = this match {
     case Ok(t)  => Result.unwrapFailed(msg, t)
@@ -207,6 +234,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> intercept[RuntimeException](y.unwrapErr).getMessage
     * called `Result::unwrapErr` on an `Ok` value: unexpected success
     * }}}
+    *
+    * @group Extract
     */
   @throws(classOf[RuntimeException])
   def unwrapErr: E = this match {
@@ -230,6 +259,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> y.ok == None
     * true
     * }}}
+    *
+    * @group Option
     */
   final def ok: Option[T] = this match {
     case Ok(v) => Some(v)
@@ -251,6 +282,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> y.err == Some("Nothing here")
     * true
     * }}}
+    *
+    * @group Option
     */
   final def err: Option[E] = this match {
     case Err(e) => Some(e)
@@ -280,6 +313,8 @@ sealed trait Result[+T, +E] extends Any {
     * >>> z1.transpose == z2
     * true
     * }}}
+    *
+    * @group Option
     */
   final def transpose[U](implicit ev: T <:< Option[U]): Option[Result[U, E]] =
     this match {
@@ -302,6 +337,8 @@ sealed trait Result[+T, +E] extends Any {
     * scala> Err(2).withOk[String]
     * res1: Result[String, Int] = Err(2)
     * }}}
+    *
+    * @group Cast
     */
   def withOk[U >: T]: Result[U, E] = this
 
@@ -316,6 +353,8 @@ sealed trait Result[+T, +E] extends Any {
     * scala> Ok(2).withErr[String]
     * res1: Result[Int, String] = Ok(2)
     * }}}
+    *
+    * @group Cast
     */
   def withErr[F >: E]: Result[T, F] = this
 }
