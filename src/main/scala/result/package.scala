@@ -84,6 +84,22 @@
   *   mapping [[Ok]]`(v)` to `Some(v)` and [[Err]]`(e)` to `None`
   *   - [[Result.transpose transpose]] transposes a [[Result]] of an `Option` into an `Option` of a [[Result]]
   *
+  * ==Extracting contained values==
+  *
+  * These methods extract the contained value in a [[Result]]`[T, E]` when it is the [[result.Ok Ok]]
+  * variant. If the [[Result]] is [[result.Err Err]]:
+  *
+  *   - [[Result.expect expect]] panics with a provided custom message
+  *   - [[Result.unwrap unwrap]] panics with a generic message
+  *   - [[Result.unwrapOr unwrapOr]] returns the provided default value
+  *   - [[Result.unwrapOrElse unwrapOrElse]] returns the result of evaluating the provided function
+  *
+  * These methods extract the contained value in a [[Result]]`[T, E]` when it is the [[result.Err Err]]
+  * variant. If the [[Result]] is [[result.Ok Ok]]:
+  *
+  *   - [[Result.expectErr expectErr]] panics with a provided custom message
+  *   - [[Result.unwrapErr unwrapErr]] panics with a generic message
+  *
   * @note
   * This documentation is a derivative of the [[https://doc.rust-lang.org/std/result/ Rust Result<T, E> documentation]]
   */

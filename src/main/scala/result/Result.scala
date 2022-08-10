@@ -79,6 +79,142 @@ sealed trait Result[+T, +E] extends Any {
     */
   def isErrAnd(f: E => Boolean): Boolean
 
+  /** Returns the contained [[Ok]] value.
+    *
+    * ==Throws==
+    *
+    * Throws if the value is an [[Err]], with a exception message combining the passed message and the [[Err]]'s value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Int, String] = Err("emergency failure")
+    * >>> intercept[RuntimeException](x.expect("Testing expect")).getMessage
+    * Testing expect: emergency failure
+    * }}}
+    */
+  @throws(classOf[RuntimeException])
+  def expect(msg: String): T = this match {
+    case Ok(t)  => t
+    case Err(e) => Result.unwrapFailed(msg, e)
+  }
+
+  /** Returns the contained [[Ok]] value.
+    *
+    * Because this function may panic, its use is generally discouraged. Instead, prefer to use pattern matching and
+    * handle the [[Err]] case explicitly, or call [[unwrapOr]] or [[unwrapOrElse]].
+    *
+    * ==Throws==
+    *
+    * Throws if the value is an [[Err]], with a exception message provided by the [[Err]]'s value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> x.unwrap
+    * 2
+    *
+    * >>> val y: Result[Int, String] = Err("emergency failure")
+    * >>> intercept[RuntimeException](y.unwrap).getMessage
+    * called `Result::unwrap` on an `Err` value: emergency failure
+    * }}}
+    */
+  @throws(classOf[RuntimeException])
+  def unwrap: T = this match {
+    case Ok(t) => t
+    case Err(e) =>
+      Result.unwrapFailed("called `Result::unwrap` on an `Err` value", e)
+  }
+
+  /** Returns the contained [[Ok]] value or a provided default.
+    *
+    * Arguments passed to [[Result.unwrapOr unwrapOr]] are eagerly evaluated; if you are passing the result of a
+    * function call, it is recommended to use [[Result.unwrapOrElse unwrapOrElse]], which is lazily evaluated.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val default = 2
+    *
+    * >>> val x: Result[Int, String] = Ok(9)
+    * >>> x.unwrapOr(default)
+    * 9
+    *
+    * >>> val y: Result[Int, String] = Err("error")
+    * >>> y.unwrapOr(default)
+    * 2
+    * }}}
+    */
+  def unwrapOr[U >: T](default: U): U = this match {
+    case Ok(t)  => t
+    case Err(_) => default
+  }
+
+  /** Returns the contained [[Ok]] value or computes it from a provided function applied to the [[Err]] value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Ok[Int, String](2).unwrapOrElse(_.size)
+    * 2
+    *
+    * >>> Err("foo").unwrapOrElse(_.size)
+    * 3
+    * }}}
+    */
+  def unwrapOrElse[U >: T](op: E => U): U = this match {
+    case Ok(t)  => t
+    case Err(e) => op(e)
+  }
+
+  /** Returns the contained [[Err]] value.
+    *
+    * ==Throws==
+    *
+    * Throws if the value is an [[Ok]], with a exception message combining the passed message and the [[Ok]]'s value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[String, Int] = Ok("unexpected success")
+    * >>> intercept[RuntimeException](x.expectErr("Testing expect")).getMessage
+    * Testing expect: unexpected success
+    * }}}
+    */
+  def expectErr(msg: String): E = this match {
+    case Ok(t)  => Result.unwrapFailed(msg, t)
+    case Err(e) => e
+  }
+
+  /** Returns the contained [[Err]] value.
+    *
+    * Because this function may panic, its use is generally discouraged. Instead, prefer to use pattern matching and
+    * handle the [[Ok]] case explicitly.
+    *
+    * ==Throws==
+    *
+    * Throws if the value is an [[Ok]], with a exception message provided by the [[Ok]]'s value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[String, Int] = Err(2)
+    * >>> x.unwrapErr
+    * 2
+    *
+    * >>> val y: Result[String, Int] = Ok("unexpected success")
+    * >>> intercept[RuntimeException](y.unwrapErr).getMessage
+    * called `Result::unwrapErr` on an `Ok` value: unexpected success
+    * }}}
+    */
+  @throws(classOf[RuntimeException])
+  def unwrapErr: E = this match {
+    case Ok(t) =>
+      Result.unwrapFailed("called `Result::unwrapErr` on an `Ok` value", t)
+    case Err(e) => e
+  }
+
   /** Converts from [[Result]]`[T, E]` to `Option[T]`.
     *
     * Converts `this` into an `Option[T]`, discarding the error, if any.
@@ -182,6 +318,12 @@ sealed trait Result[+T, +E] extends Any {
     * }}}
     */
   def withErr[F >: E]: Result[T, F] = this
+}
+
+object Result {
+  @throws(classOf[RuntimeException])
+  private final def unwrapFailed[X, Y](msg: String, value: Y): X =
+    throw new RuntimeException(s"$msg: $value")
 }
 
 /** Contains the success value */
