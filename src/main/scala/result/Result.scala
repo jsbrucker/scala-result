@@ -154,6 +154,34 @@ sealed trait Result[+T, +E] extends Any {
         }
       case Err(e) => Some(Err(e))
     }
+
+  /** Upcasts this `Result[T, E]` to `Result[U, E]`
+    *
+    * Normally used when constructing an [[Err]]
+    *
+    * {{{
+    * scala> Err(1)
+    * res0: Err[Nothing, Int] = Err(1)
+    *
+    * scala> Err(2).withOk[String]
+    * res1: Result[String, Int] = Err(2)
+    * }}}
+    */
+  def withOk[U >: T]: Result[U, E] = this
+
+  /** Upcasts this `Result[T, E]` to `Result[T, F]`
+    *
+    * Normally used when constructing an [[Ok]]
+    *
+    * {{{
+    * scala> Ok(1)
+    * res0: Ok[Int, Nothing] = Ok(1)
+    *
+    * scala> Ok(2).withErr[String]
+    * res1: Result[Int, String] = Ok(2)
+    * }}}
+    */
+  def withErr[F >: E]: Result[T, F] = this
 }
 
 /** Contains the success value */
