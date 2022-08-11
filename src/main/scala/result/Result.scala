@@ -38,7 +38,10 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Query
     */
-  def isOk: Boolean
+  def isOk: Boolean = this match {
+    case Ok(_)  => true
+    case Err(_) => false
+  }
 
   /** Returns `true` if the result is [[Ok]] and the value inside of it matches a predicate.
     *
@@ -60,7 +63,10 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Query
     */
-  def isOkAnd(f: T => Boolean): Boolean
+  def isOkAnd(f: T => Boolean): Boolean = this match {
+    case Ok(v)  => f(v)
+    case Err(_) => false
+  }
 
   /** Returns `true` if the result is [[Ok]] or the error value matches a predicate.
     *
@@ -82,7 +88,10 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Query
     */
-  def isOkOr(f: E => Boolean): Boolean
+  def isOkOr(f: E => Boolean): Boolean = this match {
+    case Ok(_)  => true
+    case Err(e) => f(e)
+  }
 
   /** Returns `true` if the result is [[Err]].
     *
@@ -100,7 +109,10 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Query
     */
-  def isErr: Boolean
+  def isErr: Boolean = this match {
+    case Ok(_)  => false
+    case Err(_) => true
+  }
 
   /** Returns `true` if the result is [[Err]] and the value inside of it matches a predicate.
     *
@@ -122,7 +134,10 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Query
     */
-  def isErrAnd(f: E => Boolean): Boolean
+  def isErrAnd(f: E => Boolean): Boolean = this match {
+    case Ok(_)  => false
+    case Err(e) => f(e)
+  }
 
   /** Returns `true` if the result is [[Err]] or the okay value matches a predicate.
     *
@@ -144,7 +159,10 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Query
     */
-  def isErrOr(f: T => Boolean): Boolean
+  def isErrOr(f: T => Boolean): Boolean = this match {
+    case Ok(v)  => f(v)
+    case Err(_) => true
+  }
 
   /** Returns `true` if the result is an [[Ok]] value containing the given value.
     *
@@ -806,6 +824,18 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => op(e)
   }
 
+  /** An alias of [[andThen]] for compatibility with for-comprehensions and consistency with Scala naming
+    *
+    * @group Misc
+    */
+  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
+
+  /** An alias of [[orElse]] for consistency with Scala naming (`Err` suffix required for disambiguation)
+    *
+    * @group Misc
+    */
+  def flatMapErr[U >: T, F](op: E => Result[U, F]): Result[U, F] = orElse(op)
+
   /** Executes the given side-effecting function if this is an `Ok`.
     *
     * ===Examples===
@@ -849,50 +879,6 @@ sealed trait Result[+T, +E] extends Any {
     * @group Misc
     */
   def foreachErr[F](op: E => F): Unit = inspectErr(op)
-
-  /** An alias of [[andThen]] for compatibility with for-comprehensions and consistency with Scala naming
-    *
-    * @group Misc
-    */
-  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
-
-  /** An alias of [[orElse]] for consistency with Scala naming (`Err` suffix required for disambiguation)
-    *
-    * @group Misc
-    */
-  def flatMapErr[U >: T, F](op: E => Result[U, F]): Result[U, F] = orElse(op)
-
-  /** Executes the given side-effecting function if this is an `Ok`.
-    *
-    * ===Examples===
-    *
-    * {{{
-    * Err[Int, String]("Some Error").foreach(println(_)) // Doesn't print
-    * Ok(5).foreach(println(_)) // Prints 5
-    * }}}
-    *
-    * @group Misc
-    */
-  def foreach[U](op: T => U): Unit = this match {
-    case Ok(t) => op(t)
-    case _     =>
-  }
-
-  /** Executes the given side-effecting function if this is an `Err`.
-    *
-    * ===Examples===
-    *
-    * {{{
-    * Ok[Int, String]("Some Value").foreach(println(_)) // Doesn't print
-    * Err(5).foreach(println(_)) // Prints 5
-    * }}}
-    *
-    * @group Misc
-    */
-  def foreachErr[F](op: E => F): Unit = this match {
-    case Err(e) => op(e)
-    case _      =>
-  }
 
   /** Returns `true` if `Err` or returns the result of the application of the given predicate to the `Ok` value.
     *
@@ -1022,31 +1008,7 @@ object Result {
 }
 
 /** Contains the success value */
-case class Ok[+T, +E](v: T) extends AnyVal with Result[T, E] {
-  override def isOk: Boolean = true
-
-  override def isOkAnd(f: T => Boolean): Boolean = f(v)
-
-  override def isOkOr(f: E => Boolean): Boolean = true
-
-  override def isErr: Boolean = false
-
-  override def isErrAnd(f: E => Boolean): Boolean = false
-
-  override def isErrOr(f: T => Boolean): Boolean = f(v)
-}
+case class Ok[+T, +E](v: T) extends AnyVal with Result[T, E]
 
 /** Contains the error value */
-case class Err[+T, +E](e: E) extends AnyVal with Result[T, E] {
-  override def isOk: Boolean = false
-
-  override def isOkAnd(f: T => Boolean): Boolean = false
-
-  override def isOkOr(f: E => Boolean): Boolean = f(e)
-
-  override def isErr: Boolean = true
-
-  override def isErrAnd(f: E => Boolean): Boolean = f(e)
-
-  override def isErrOr(f: T => Boolean): Boolean = true
-}
+case class Err[+T, +E](e: E) extends AnyVal with Result[T, E]
