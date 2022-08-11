@@ -326,6 +326,60 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => er(e)
   }
 
+  /** Returns the contained [[Ok]] value, but never throws
+    *
+    * Unlike [[unwrap]], this method is known to never throw on the result types it is implemented for. Therefore, it
+    * can be used instead of [[unwrap]] as a maintainability safeguard that will fail to compile if the error type of
+    * the [[Result]] is later changed to an error that can actually occur.
+    *
+    * To leverage this method, the result must match `Result[_, Nothing]`. Because `Nothing` can never be instantiated,
+    * we can be assured that if the error type is `Nothing` then an [[Err]] cannot be instantiated.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> def onlyGoodNews(msg: String): Result[String, Nothing] = Ok("This msg is fine: " + msg)
+    * >>> onlyGoodNews("Some Message").intoOk
+    * This msg is fine: Some Message
+    *
+    * >>> val possibleError: Result[String, Int] = Ok("Some Message")
+    * possibleError.intoOk // This line would fail to compile because [[intoOk]] cannot prove it isn't an [[Err]].
+    * }}}
+    *
+    * @group Extract
+    */
+  def intoOk(implicit ev: E <:< Nothing): T = this match {
+    case Ok(v)  => v
+    case Err(e) => ev(e) // Unreachable
+  }
+
+  /** Returns the contained [[Err]] value, but never throws
+    *
+    * Unlike [[unwrapErr]], this method is known to never throw on the result types it is implemented for. Therefore, it
+    * can be used instead of [[unwrapErr]] as a maintainability safeguard that will fail to compile if the error type of
+    * the [[Result]] is later changed to an error that can actually occur.
+    *
+    * To leverage this method, the result must match `Result[Nothing, _]`. Because `Nothing` can never be instantiated,
+    * we can be assured that if the error type is `Nothing` then an [[Err]] cannot be instantiated.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> def onlyBadNews(msg: String): Result[Nothing, String] = Err("This msg is unacceptable: " + msg)
+    * >>> onlyBadNews("Some Error").intoErr
+    * This msg is unacceptable: Some Error
+    *
+    * >>> val possibleOkay: Result[Int, String] = Err("Some Error")
+    * possibleOkay.intoErr // This line would fail to compile because [[intoErr]] cannot prove it isn't an [[Ok]].
+    * }}}
+    *
+    * @group Extract
+    */
+  def intoErr(implicit ev: T <:< Nothing): E = this match {
+    case Ok(v)  => ev(v) // Unreachable
+    case Err(e) => e
+  }
+
   /** Converts from [[Result]]`[T, E]` to `Option[T]`.
     *
     * Converts `this` into an `Option[T]`, discarding the error, if any.
@@ -543,7 +597,8 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Transform
     */
-  def flatten[U, F >: E](implicit ev: T <:< Result[U, F]): Result[U, F] = andThen(ev)
+  def flatten[U, F >: E](implicit ev: T <:< Result[U, F]): Result[U, F] =
+    andThen(ev)
 
   /** Converts from `Result[T, Result[T, E]]` to `Result[T, E]`
     *
@@ -574,7 +629,8 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Transform
     */
-  def flattenErr[U >: T, F](implicit ev: E <:< Result[U, F]): Result[U, F] = orElse(ev)
+  def flattenErr[U >: T, F](implicit ev: E <:< Result[U, F]): Result[U, F] =
+    orElse(ev)
 
   /** Returns `rhs` if the result is [[Ok]], otherwise returns this [[Err]] value.
     *
