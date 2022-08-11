@@ -696,12 +696,6 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => Err(e)
   }
 
-  /** An alias of [[andThen]] for compatibility with for-comprehensions
-    *
-    * @group Misc
-    */
-  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
-
   /** Returns `rhs` if the [[Result]] is [[Err]], otherwise returns the this [[Ok]] value.
     *
     * Arguments passed to `or` are eagerly evaluated; if you are passing the result of a function call, it is
@@ -768,18 +762,6 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => op(e)
   }
 
-  /** An alias of [[andThen]] for compatibility with for-comprehensions and consistency with Scala naming
-    *
-    * @group Misc
-    */
-  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
-
-  /** An alias of [[orElse]] for consistency with Scala naming (`Err` suffix required for disambiguation)
-    *
-    * @group Misc
-    */
-  def flatMapErr[U >: T, F](op: E => Result[U, F]): Result[U, F] = orElse(op)
-
   /** Executes the given side-effecting function if this is an `Ok`.
     *
     * ===Examples===
@@ -811,38 +793,6 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => op(e)
     case _      =>
   }
-
-  /** Upcasts this `Result[T, E]` to `Result[U, E]`
-    *
-    * Normally used when constructing an [[Err]]
-    *
-    * {{{
-    * scala> Err(1)
-    * res0: Err[Nothing, Int] = Err(1)
-    *
-    * scala> Err(2).withOk[String]
-    * res1: Result[String, Int] = Err(2)
-    * }}}
-    *
-    * @group Cast
-    */
-  def withOk[U >: T]: Result[U, E] = this
-
-  /** Upcasts this `Result[T, E]` to `Result[T, F]`
-    *
-    * Normally used when constructing an [[Ok]]
-    *
-    * {{{
-    * scala> Ok(1)
-    * res0: Ok[Int, Nothing] = Ok(1)
-    *
-    * scala> Ok(2).withErr[String]
-    * res1: Result[Int, String] = Ok(2)
-    * }}}
-    *
-    * @group Cast
-    */
-  def withErr[F >: E]: Result[T, F] = this
 
   /** An alias of [[andThen]] for compatibility with for-comprehensions and consistency with Scala naming
     *
@@ -975,6 +925,38 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => p(e)
     case _      => false
   }
+
+  /** Upcasts this `Result[T, E]` to `Result[U, E]`
+    *
+    * Normally used when constructing an [[Err]]
+    *
+    * {{{
+    * scala> Err(1)
+    * res0: Err[Nothing, Int] = Err(1)
+    *
+    * scala> Err(2).withOk[String]
+    * res1: Result[String, Int] = Err(2)
+    * }}}
+    *
+    * @group Cast
+    */
+  def withOk[U >: T]: Result[U, E] = this
+
+  /** Upcasts this `Result[T, E]` to `Result[T, F]`
+    *
+    * Normally used when constructing an [[Ok]]
+    *
+    * {{{
+    * scala> Ok(1)
+    * res0: Ok[Int, Nothing] = Ok(1)
+    *
+    * scala> Ok(2).withErr[String]
+    * res1: Result[Int, String] = Ok(2)
+    * }}}
+    *
+    * @group Cast
+    */
+  def withErr[F >: E]: Result[T, F] = this
 }
 
 object Result {
