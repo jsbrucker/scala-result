@@ -645,7 +645,7 @@ sealed trait Result[+T, +E] extends Any {
   /** Returns `rhs` if the [[Result]] is [[Err]], otherwise returns the this [[Ok]] value.
     *
     * Arguments passed to `or` are eagerly evaluated; if you are passing the result of a function call, it is
-    * recommended to use [[orElse orElse]], which is lazily evaluated.
+    * recommended to use [[orElse]], which is lazily evaluated.
     *
     * ==Examples==
     *
@@ -719,6 +719,38 @@ sealed trait Result[+T, +E] extends Any {
     * @group Misc
     */
   def flatMapErr[U >: T, F](op: E => Result[U, F]): Result[U, F] = orElse(op)
+
+  /** Executes the given side-effecting function if this is an `Ok`.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * Err[Int, String]("Some Error").inspect(println(_)) // Doesn't print
+    * Ok(5).inspect(println(_)) // Prints 5
+    * }}}
+    *
+    * @group Misc
+    */
+  def inspect[U](op: T => U): Unit = this match {
+    case Ok(t) => op(t)
+    case _     =>
+  }
+
+  /** Executes the given side-effecting function if this is an `Err`.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * Ok[Int, String]("Some Value").inspectErr(println(_)) // Doesn't print
+    * Err(5).inspectErr(println(_)) // Prints 5
+    * }}}
+    *
+    * @group Misc
+    */
+  def inspectErr[F](op: E => F): Unit = this match {
+    case Err(e) => op(e)
+    case _      =>
+  }
 
   /** Upcasts this `Result[T, E]` to `Result[U, E]`
     *
