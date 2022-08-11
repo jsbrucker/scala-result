@@ -543,8 +543,7 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Transform
     */
-  def flatten[U, F >: E](implicit ev: T <:< Result[U, F]): Result[U, F] =
-    andThen(ev)
+  def flatten[U, F >: E](implicit ev: T <:< Result[U, F]): Result[U, F] = andThen(ev)
 
   /** Converts from `Result[T, Result[T, E]]` to `Result[T, E]`
     *
@@ -575,8 +574,7 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Transform
     */
-  def flattenErr[U >: T, F](implicit ev: E <:< Result[U, F]): Result[U, F] =
-    orElse(ev)
+  def flattenErr[U >: T, F](implicit ev: E <:< Result[U, F]): Result[U, F] = orElse(ev)
 
   /** Returns `rhs` if the result is [[Ok]], otherwise returns this [[Err]] value.
     *
@@ -641,6 +639,12 @@ sealed trait Result[+T, +E] extends Any {
     case Ok(t)  => op(t)
     case Err(e) => Err(e)
   }
+
+  /** An alias of [[andThen]] for compatibility with for-comprehensions
+    *
+    * @group Misc
+    */
+  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
 
   /** Returns `rhs` if the [[Result]] is [[Err]], otherwise returns the this [[Ok]] value.
     *
@@ -783,6 +787,138 @@ sealed trait Result[+T, +E] extends Any {
     * @group Cast
     */
   def withErr[F >: E]: Result[T, F] = this
+
+  /** An alias of [[andThen]] for compatibility with for-comprehensions and consistency with Scala naming
+    *
+    * @group Misc
+    */
+  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
+
+  /** An alias of [[orElse]] for consistency with typcial Scala naming (`Err` suffix required for disambiguation)
+    *
+    * @group Misc
+    */
+  def flatMapErr[U >: T, F](op: E => Result[U, F]): Result[U, F] = orElse(op)
+
+  /** Executes the given side-effecting function if this is an `Ok`.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * Err[Int, String]("Some Error").foreach(println(_)) // Doesn't print
+    * Ok(5).foreach(println(_)) // Prints 5
+    * }}}
+    *
+    * @group Misc
+    */
+  def foreach[U](op: T => U): Unit = this match {
+    case Ok(t) => op(t)
+    case _     =>
+  }
+
+  /** Executes the given side-effecting function if this is an `Err`.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * Ok[Int, String]("Some Value").foreach(println(_)) // Doesn't print
+    * Err(5).foreach(println(_)) // Prints 5
+    * }}}
+    *
+    * @group Misc
+    */
+  def foreachErr[F](op: E => F): Unit = this match {
+    case Err(e) => op(e)
+    case _      =>
+  }
+
+  /** Returns `true` if `Err` or returns the result of the application of the given predicate to the `Ok` value.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * >>> Ok(12).forall(_ > 10)
+    * true
+    *
+    * >>> Ok(7).forall(_ > 10)
+    * false
+    *
+    * >>> Err[Int, Int](12).forall(_ => false)
+    * true
+    * }}}
+    *
+    * @group Misc
+    */
+  def forall(p: T => Boolean): Boolean = this match {
+    case Ok(t) => p(t)
+    case _     => true
+  }
+
+  /** Returns `true` if `Ok` or returns the result of the application of the given predicate to the `Err` value.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * >>> Err(12).forallErr(_ > 10)
+    * true
+    *
+    * >>> Err(7).forallErr(_ > 10)
+    * false
+    *
+    * >>> Ok[Int, Int](12).forallErr(_ => false)
+    * true
+    * }}}
+    *
+    * @group Misc
+    */
+  def forallErr(p: E => Boolean): Boolean = this match {
+    case Err(e) => p(e)
+    case _      => true
+  }
+
+  /** Returns `false` if `Err` or returns the result of the application of the given predicate to the `Ok` value.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * >>> Ok(12).exists(_ > 10)
+    * true
+    *
+    * >>> Ok(7).exists(_ > 10)
+    * false
+    *
+    * >>> Err[Int, Int](12).exists(_ => true)
+    * false
+    * }}}
+    *
+    * @group Misc
+    */
+  def exists(p: T => Boolean): Boolean = this match {
+    case Ok(b) => p(b)
+    case _     => false
+  }
+
+  /** Returns `false` if `Ok` or returns the result of the application of the given predicate to the `Err` value.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * >>> Err(12).existsErr(_ > 10)
+    * true
+    *
+    * >>> Err(7).existsErr(_ > 10)
+    * false
+    *
+    * >>> Ok[Int, Int](12).existsErr(_ => true)
+    * false
+    * }}}
+    *
+    * @group Misc
+    */
+  def existsErr(p: E => Boolean): Boolean = this match {
+    case Err(e) => p(e)
+    case _      => false
+  }
 }
 
 object Result {
