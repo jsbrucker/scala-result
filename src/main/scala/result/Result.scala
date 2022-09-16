@@ -488,7 +488,7 @@ sealed trait Result[+T, +E] extends Any {
     case _      => None
   }
 
-  /** Transposes a [[Result]] of an `Option` into an `Option` of a [[Result]].
+  /** Transposes a [[Result]] of an Ok `Option` into an `Option` of a [[Result]].
     *
     * `Ok(None)` will be mapped to `None`.
     * `Ok(Some(_))` and `Err(_)` will be mapped to `Some(Ok(_))` and `Some(Err(_))`.
@@ -501,9 +501,9 @@ sealed trait Result[+T, +E] extends Any {
     * >>> x1.transpose == x2
     * true
     *
-    * >> val y1: Result[Option[Int], String] = Ok(None)
-    * >> val y2: Option[Result[Int, String]] = None
-    * >> y1.transpose == y2
+    * >>> val y1: Result[Option[Int], String] = Ok(None)
+    * >>> val y2: Option[Result[Int, String]] = None
+    * >>> y1.transpose == y2
     * true
     *
     * >>> val z1: Result[Option[Int], String] = Err("Some Error")
@@ -522,6 +522,44 @@ sealed trait Result[+T, +E] extends Any {
           case None    => None
         }
       case Err(e) => Some(Err(e))
+    }
+
+  /** Transposes a [[Result]] of an `Err` `Option` into an `Option` of a [[Result]].
+    *
+    * `Err(None)` will be mapped to `None`.
+    * `Err(Some(_))` and `Ok(_)` will be mapped to `Some(Err(_))` and `Some(Ok(_))`.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x1: Result[String, Option[Int]] = Err(Some(5))
+    * >>> val x2: Option[Result[String, Int]] = Some(Err(5))
+    * >>> x1.transposeErr == x2
+    * true
+    *
+    * >>> val y1: Result[String, Option[Int]] = Err(None)
+    * >>> val y2: Option[Result[String, Int]] = None
+    * >>> y1.transposeErr == y2
+    * true
+    *
+    * >>> val z1: Result[String, Option[Int]] = Ok("Some Okay")
+    * >>> val z2: Option[Result[String, Int]] = Some(Ok("Some Okay"))
+    * >>> z1.transposeErr == z2
+    * true
+    * }}}
+    *
+    * @group Option
+    */
+  final def transposeErr[F](implicit
+      ev: E <:< Option[F]
+  ): Option[Result[T, F]] =
+    this match {
+      case Ok(ok) => Some(Ok(ok))
+      case Err(option) =>
+        ev(option) match {
+          case Some(x) => Some(Err(x))
+          case None    => None
+        }
     }
 
   /** Maps a [[Result]]`[T, E]` to [[Result]]`[U, E]` by applying a function to a contained [[Ok]] value, leaving an
