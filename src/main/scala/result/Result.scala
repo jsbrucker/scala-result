@@ -968,6 +968,50 @@ sealed trait Result[+T, +E] extends Any {
     case _      => false
   }
 
+  /** Returns the existing `Ok` if this is an `Ok` and the predicate `p` holds for the ok value, or `Err(default)` if
+    * the predicate `p` does not hold, else returns the existing `Err`.
+    *
+    * {{{
+    * >>> Ok(12).filterOrElse(_ > 10, -1)
+    * Ok(12)
+    *
+    * >>> Ok(7).filterOrElse(_ > 10, -1)
+    * Err(-1)
+    *
+    * >>> Err(7).filterOrElse(_ => false, -1)
+    * Err(7)
+    * }}}
+    *
+    * @group Misc
+    */
+  def filterOrElse[F >: E](p: T => Boolean, default: => F): Result[T, F] =
+    this match {
+      case Ok(ok) if !p(ok) => Err(default)
+      case _                => this
+    }
+
+  /** Returns the existing `Err` if this is an `Err` and the predicate `p` holds for the err value, or `Ok(default)` if
+    * the predicate `p` does not hold, else returns the existing `Ok`.
+    *
+    * {{{
+    * >>> Err(12).filterErrOrElse(_ > 10, -1)
+    * Err(12)
+    *
+    * >>> Err(7).filterErrOrElse(_ > 10, -1)
+    * Ok(-1)
+    *
+    * >>> Ok(7).filterErrOrElse(_ => false, -1)
+    * Ok(7)
+    * }}}
+    *
+    * @group Misc
+    */
+  def filterErrOrElse[U >: T](p: E => Boolean, default: => U): Result[U, E] =
+    this match {
+      case Err(b) if !p(b) => Ok(default)
+      case _               => this
+    }
+
   /** Upcasts this `Result[T, E]` to `Result[U, E]`
     *
     * Normally used when constructing an [[Err]]
