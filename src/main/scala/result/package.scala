@@ -174,6 +174,9 @@
   * [[Result]]`[E, U]` value having a different inner type `U` than [[Result]]`[E, T]`. The [[Result.orElse orElse]]
   * method can produce a [[Result]]`[F, T]` value having a different error type `F` than [[Result]]`[E, T]`.
   *
+  * NOTE: [[Result.flatMap flatMap]] is equivalent to[[Result.andThen andThen]] and it is also provided to consistency
+  * with typical Scala patterns.
+  *
   * | method                     | self     | function input | function result | output   |
   * |----------------------------|----------|----------------|-----------------|----------|
   * | [[Result.andThen andThen]] | `Err(e)` | (not provided) | (not evaluated) | `Err(e)` |
