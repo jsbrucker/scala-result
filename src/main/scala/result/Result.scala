@@ -9,8 +9,8 @@ package result
   * @groupprio Query 0
   * @groupname Extract Extracting contained values
   * @groupprio Extract 1
-  * @groupname Option Transform variant to Option
-  * @groupprio Option 2
+  * @groupname Collection Transforming variant to other collection types
+  * @groupprio Collection 2
   * @groupname Transform Transforming contained values
   * @groupprio Transform 3
   * @groupname Boolean Boolean operators
@@ -458,7 +458,7 @@ sealed trait Result[+T, +E] extends Any {
     * true
     * }}}
     *
-    * @group Option
+    * @group Collection
     */
   final def ok: Option[T] = this match {
     case Ok(v) => Some(v)
@@ -481,11 +481,107 @@ sealed trait Result[+T, +E] extends Any {
     * true
     * }}}
     *
-    * @group Option
+    * @group Collection
     */
   final def err: Option[E] = this match {
     case Err(e) => Some(e)
     case _      => None
+  }
+
+  /** An alias of [[ok]] for consistency with Scala naming
+    *
+    * @group Collection
+    */
+  def toOption: Option[T] = ok
+
+  /** An alias of [[err]] for consistency with Scala naming (`Err` suffix required for disambiguation)
+    *
+    * @group Collection
+    */
+  def toOptionErr: Option[E] = err
+
+  /** Returns a `Seq` containing the `Ok` value if it exists or an empty `Seq` if this is a `Err`.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Ok(12).toSeq == Seq(12)
+    * true
+    *
+    * >>> Err(12).toSeq == Seq()
+    * true
+    * }}}
+    *
+    * @group Collection
+    */
+  def toSeq: collection.immutable.Seq[T] = this match {
+    case Ok(ok) => collection.immutable.Seq(ok)
+    case _      => collection.immutable.Seq.empty
+  }
+
+  /** Returns a `Seq` containing the `Err` value if it exists or an empty `Seq` if this is a `Ok`.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Err(12).toSeqErr == Seq(12)
+    * true
+    *
+    * >>> Ok(12).toSeqErr == Seq()
+    * true
+    * }}}
+    *
+    * @group Collection
+    */
+  def toSeqErr: collection.immutable.Seq[E] = this match {
+    case Err(e) => collection.immutable.Seq(e)
+    case _      => collection.immutable.Seq.empty
+  }
+
+  /** Returns an `Either` using the `Ok` value if it exists for `Right` otherwise using the `Err` value for `Left`.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Ok(9).toEither == Right(9)
+    * true
+    *
+    * >>> val ex = new Exception("Test Exception")
+    * >>> Err(12).toEither == Left(12)
+    * true
+    * }}}
+    *
+    * @group Collection
+    */
+  def toEither: Either[E, T] = this match {
+    case Ok(ok) => Right(ok)
+    case Err(e) => Left(e)
+  }
+
+  /** Returns a `Try` using the `Ok` value if it exists for `Success` otherwise using the `Err` value for `Failure`.
+    *
+    * NOTE: This method is only available if the `Err` value is a `Throwable`
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> import scala.util.{Failure, Success}
+    *
+    * >>> Ok(12).toTry == Success(12)
+    * true
+    *
+    * >>> val ex = new Exception("Test Exception")
+    * >>> Err(ex).toTry == Failure(ex)
+    * true
+    *
+    * Err(12).toTry // This line should fail to compile
+    * }}}
+    *
+    * @group Collection
+    */
+  def toTry(implicit ev: E <:< Throwable): scala.util.Try[T] = this match {
+    case Ok(ok) => scala.util.Success(ok)
+    case Err(e) => scala.util.Failure(e)
   }
 
   /** Transposes a [[Result]] of an Ok `Option` into an `Option` of a [[Result]].
@@ -512,9 +608,11 @@ sealed trait Result[+T, +E] extends Any {
     * true
     * }}}
     *
-    * @group Option
+    * @group Collection
     */
-  final def transpose[U](implicit ev: T <:< Option[U]): Option[Result[U, E]] =
+  def transpose[U](implicit
+      ev: T <:< Option[U]
+  ): Option[Result[U, E]] =
     this match {
       case Ok(option) =>
         ev(option) match {
@@ -548,9 +646,9 @@ sealed trait Result[+T, +E] extends Any {
     * true
     * }}}
     *
-    * @group Option
+    * @group Collection
     */
-  final def transposeErr[F](implicit
+  def transposeErr[F](implicit
       ev: E <:< Option[F]
   ): Option[Result[T, F]] =
     this match {
