@@ -104,7 +104,10 @@
   *   [[Ok]]`(v)` to `None`
   *   - [[Result.ok ok]] transforms [[Result]]`[E, T]` into `Option[T]`, mapping [[Ok]]`(v)` to `Some(v)` and
   *   [[Err]]`(e)` to `None`
-  *   - [[Result.transpose transpose]] transposes a [[Result]] of an `Option` into an `Option` of a [[Result]]
+  *   - [[Result.transposeOption transposeOption]] transposes a [[Result]]`[E, Option[T]]` into an
+  *   `Option[`[[Result]]`[E, T]]`
+  *   - [[Result.transposeOptionErr transposeOptionErr]] transposes a [[Result]]`[Option[E], T]` into an
+  *   `Option[`[[Result]]`[E, T]]`
   *
   * This method transforms the contained value of the [[result.Ok Ok]] variant:
   *
@@ -122,6 +125,13 @@
   *   default value if the [[Result]] is [[Err]]
   *   - [[Result.mapOrElse mapOrElse]] applies the provided function to the contained value of [[Ok]], or applies the
   *   provided default fallback function to the contained value of [[Err]]
+  *
+  * These methods transform [[Result]] to `Future`:
+  *
+  *   - [[Result.transposeFuture transposeFuture]] transposes a [[Result]]`[E, Future[T]]` into a
+  *   `Future[`[[Result]]`[E, T]]`
+  *   - [[Result.transposeFutureErr transposeFutureErr]] transposes a [[Result]]`[Future[E], T]` into a
+  *   `Future[`[[Result]]`[E, T]]`
   *
   * ==Extracting contained values==
   *

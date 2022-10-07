@@ -594,32 +594,28 @@ sealed trait Result[+E, +T] extends Any {
     * {{{
     * >>> val x1: Result[String, Option[Int]] = Ok(Some(5))
     * >>> val x2: Option[Result[String, Int]] = Some(Ok(5))
-    * >>> x1.transpose == x2
+    * >>> x1.transposeOption == x2
     * true
     *
     * >>> val y1: Result[String, Option[Int]] = Ok(None)
     * >>> val y2: Option[Result[String, Int]] = None
-    * >>> y1.transpose == y2
+    * >>> y1.transposeOption == y2
     * true
     *
     * >>> val z1: Result[String, Option[Int]] = Err("Some Error")
     * >>> val z2: Option[Result[String, Int]] = Some(Err("Some Error"))
-    * >>> z1.transpose == z2
+    * >>> z1.transposeOption == z2
     * true
     * }}}
     *
     * @group Collection
     */
-  def transpose[U](implicit
+  def transposeOption[U](implicit
       ev: T <:< Option[U]
   ): Option[Result[E, U]] =
     this match {
-      case Ok(option) =>
-        ev(option) match {
-          case Some(x) => Some(Ok(x))
-          case None    => None
-        }
-      case Err(e) => Some(Err(e))
+      case Ok(option) => ev(option).map(Ok(_))
+      case Err(e)     => Some(Err(e))
     }
 
   /** Transposes a [[Result]] of an `Err` `Option` into an `Option` of a [[Result]].
@@ -632,32 +628,88 @@ sealed trait Result[+E, +T] extends Any {
     * {{{
     * >>> val x1: Result[Option[Int], String] = Err(Some(5))
     * >>> val x2: Option[Result[Int, String]] = Some(Err(5))
-    * >>> x1.transposeErr == x2
+    * >>> x1.transposeOptionErr == x2
     * true
     *
     * >>> val y1: Result[Option[Int], String] = Err(None)
     * >>> val y2: Option[Result[Int, String]] = None
-    * >>> y1.transposeErr == y2
+    * >>> y1.transposeOptionErr == y2
     * true
     *
     * >>> val z1: Result[Option[Int], String] = Ok("Some Okay")
     * >>> val z2: Option[Result[Int, String]] = Some(Ok("Some Okay"))
-    * >>> z1.transposeErr == z2
+    * >>> z1.transposeOptionErr == z2
     * true
     * }}}
     *
     * @group Collection
     */
-  def transposeErr[F](implicit
+  def transposeOptionErr[F](implicit
       ev: E <:< Option[F]
   ): Option[Result[F, T]] =
     this match {
-      case Ok(ok) => Some(Ok(ok))
-      case Err(option) =>
-        ev(option) match {
-          case Some(x) => Some(Err(x))
-          case None    => None
-        }
+      case Ok(ok)      => Some(Ok(ok))
+      case Err(option) => ev(option).map(Err(_))
+    }
+
+  /** Transposes a [[Result]] of an Ok `Future` into an `Future` of a [[Result]].
+    *
+    * `Ok(Future(_))` and `Err(_)` will be mapped to `Future(Ok(_))` and `Future(Err(_))`.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> import scala.concurrent.Future
+    * >>> implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+    *
+    * >>> val x: Result[String, Future[Int]] = Ok(Future(5))
+    * >>> x.transposeFuture.isInstanceOf[Future[Result[String, Int]]]
+    * true
+    *
+    * >>> val y: Result[String, Future[Int]] = Err("Some Error")
+    * >>> y.transposeFuture.isInstanceOf[Future[Result[String, Int]]]
+    * true
+    * }}}
+    *
+    * @group Collection
+    */
+  def transposeFuture[U](implicit
+      ev: T <:< scala.concurrent.Future[U],
+      executor: scala.concurrent.ExecutionContext
+  ): scala.concurrent.Future[Result[E, U]] =
+    this match {
+      case Ok(future) => ev(future).map(Ok(_))
+      case Err(e)     => scala.concurrent.Future(Err(e))
+    }
+
+  /** Transposes a [[Result]] of an `Err` `Future` into an `Future` of a [[Result]].
+    *
+    * `Err(Future(_))` and `Ok(_)` will be mapped to `Future(Err(_))` and `Future(Ok(_))`.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> import scala.concurrent.Future
+    * >>> implicit val ec: scala.concurrent.ExecutionContext = scala.concurrent.ExecutionContext.global
+    *
+    * >>> val x: Result[Future[String], Int] = Ok(5)
+    * >>> x.transposeFutureErr.isInstanceOf[Future[Result[String, Int]]]
+    * true
+    *
+    * >>> val y: Result[Future[String], Int] = Err(Future("Some Error"))
+    * >>> y.transposeFutureErr.isInstanceOf[Future[Result[String, Int]]]
+    * true
+    * }}}
+    *
+    * @group Collection
+    */
+  def transposeFutureErr[F](implicit
+      ev: E <:< scala.concurrent.Future[F],
+      executor: scala.concurrent.ExecutionContext
+  ): scala.concurrent.Future[Result[F, T]] =
+    this match {
+      case Ok(ok)      => scala.concurrent.Future(Ok(ok))
+      case Err(future) => ev(future).map(Err(_))
     }
 
   /** Maps a [[Result]]`[E, T]` to [[Result]]`[E, U]` by applying a function to a contained [[Ok]] value, leaving an
