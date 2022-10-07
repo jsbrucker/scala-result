@@ -173,6 +173,11 @@
   * | [[Result.orElse orElse]]   | `Err(e)` | `e`            | `Ok(y)`         | `Ok(y)`  |
   * | [[Result.orElse orElse]]   | `Ok(x)`  | (not provided) | (not evaluated) | `Ok(x)`  |
   *
+  * ==Implicit classes==
+  *
+  * Implicit classes are provided to facilitate conversion of `Option`, `Either`, and `Try` types to a [[Result]].
+  * They are available by importing [[RichOption]], [[RichEither]], and [[RichTry]] respectively.
+  *
   * @note
   * This documentation is a derivative of the [[https://doc.rust-lang.org/std/result/ Rust Result<T, E> documentation]]
   */
