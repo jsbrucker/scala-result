@@ -27,7 +27,7 @@
   * ...  case object UnsupportedVersion extends ParseError
   * ... }
   *
-  * >>> def parseMajorVersion(header: List[Int]): Result[MajorVersion, ParseError] =
+  * >>> def parseMajorVersion(header: List[Int]): Result[ParseError, MajorVersion] =
   * ...   header.headOption match {
   * ...     case None    => Err(ParseError.InvalidHeaderLength)
   * ...     case Some(1) => Ok(MajorVersion.V1)
@@ -49,8 +49,8 @@
   *
   * {{{
   * >>> import result._
-  * >>> val goodResult: Result[Int, String] = Ok(10);
-  * >>> val badResult: Result[Int, String] = Err("Some Error")
+  * >>> val goodResult: Result[String, Int] = Ok(10);
+  * >>> val badResult: Result[String, Int] = Err("Some Error")
   *
   * // The `isOk` and `isErr` methods do what they say.
   *
@@ -70,7 +70,7 @@
   *
   * // Use `andThen` to continue the computation.
   * scala> goodResult.andThen(i => Ok(i == 11))
-  * res0: Result[Boolean, String] = Ok(false)
+  * res0: Result[String, Boolean] = Ok(false)
   *
   * // Use `orElse` to handle the error.
   * scala> badResult.orElse {
@@ -78,7 +78,7 @@
   *      |   case "Some Error"        => Err(true)
   *      |   case _                   => Err(false)
   *      | }
-  * res1: Result[Int, Boolean] = Err(true)
+  * res1: Result[Boolean, Int] = Err(true)
   * }}}
   *
   * =Method overview=
@@ -100,23 +100,23 @@
   *
   * These methods transform [[Result]] to `Option`:
   *
-  *   - [[Result.err err]] transforms [[Result]]`[T, E]` into `Option[E]`, mapping [[Err]]`(e)` to `Some(e)` and
+  *   - [[Result.err err]] transforms [[Result]]`[E, T]` into `Option[E]`, mapping [[Err]]`(e)` to `Some(e)` and
   *   [[Ok]]`(v)` to `None`
-  *   - [[Result.ok ok]] transforms [[Result]]`[T, E]` into `Option[T]`, mapping [[Ok]]`(v)` to `Some(v)` and
+  *   - [[Result.ok ok]] transforms [[Result]]`[E, T]` into `Option[T]`, mapping [[Ok]]`(v)` to `Some(v)` and
   *   [[Err]]`(e)` to `None`
   *   - [[Result.transpose transpose]] transposes a [[Result]] of an `Option` into an `Option` of a [[Result]]
   *
   * This method transforms the contained value of the [[result.Ok Ok]] variant:
   *
-  *   - [[Result.map map]] transforms [[Result]]`[T, E]` into [[Result]]`[U, E]` by applying the provided function to
+  *   - [[Result.map map]] transforms [[Result]]`[E, T]` into [[Result]]`[E, U]` by applying the provided function to
   *   the contained value of [[Ok]] and leaving [[Err]] values unchanged
   *
   * This method transforms the contained value of the [[result.Err Err]] variant:
   *
-  *   - [[Result.mapErr mapErr]] transforms [[Result]]`[T, E]` into [[Result]]`[T, F]` by applying the provided function
+  *   - [[Result.mapErr mapErr]] transforms [[Result]]`[E, T]` into [[Result]]`[F, T]` by applying the provided function
   *   to the contained value of [[Err]] and leaving [[Ok]] values unchanged
   *
-  * These methods transform a [[Result]]`[T, E]` into a value of a possibly different type `U`:
+  * These methods transform a [[Result]]`[E, T]` into a value of a possibly different type `U`:
   *
   *   - [[Result.mapOr mapOr]] applies the provided function to the contained value of [[Ok]], or returns the provided
   *   default value if the [[Result]] is [[Err]]
@@ -125,7 +125,7 @@
   *
   * ==Extracting contained values==
   *
-  * These methods extract the contained value in a [[Result]]`[T, E]` when it is the [[Ok]]
+  * These methods extract the contained value in a [[Result]]`[E, T]` when it is the [[Ok]]
   * variant. If the [[Result]] is [[Err]]:
   *
   *   - [[Result.expect expect]] panics with a provided custom message
@@ -133,7 +133,7 @@
   *   - [[Result.unwrapOr unwrapOr]] returns the provided default value
   *   - [[Result.unwrapOrElse unwrapOrElse]] returns the result of evaluating the provided function
   *
-  * These methods extract the contained value in a [[Result]]`[T, E]` when it is the [[Err]]
+  * These methods extract the contained value in a [[Result]]`[E, T]` when it is the [[Err]]
   * variant. If the [[Result]] is [[Ok]]:
   *
   *   - [[Result.expectErr expectErr]] panics with a provided custom message
@@ -146,9 +146,9 @@
   * input (to be lazily evaluated).
   *
   * The [[Result.and and]] and [[Result.or or]] methods take another [[Result]] as input, and produce a [[Result]] as
-  * output. The [[Result.and and]] method can produce a [[Result]]`[U, E]` value having a different inner type `U` than
-  * [[Result]]`[T, E]`. The [[Result.or or]] method can produce a [[Result]]`[T, F]` value having a different error type
-  * `F` than [[Result]]`[T, E]`.
+  * output. The [[Result.and and]] method can produce a [[Result]]`[E, U]` value having a different inner type `U` than
+  * [[Result]]`[E, T]`. The [[Result.or or]] method can produce a [[Result]]`[F, T]` value having a different error type
+  * `F` than [[Result]]`[E, T]`.
   *
   * | method             | self     | input     | output   |
   * |--------------------|----------|-----------|----------|
@@ -161,8 +161,8 @@
   *
   * The [[Result.andThen andThen]] and [[Result.orElse orElse]] methods take a function as input, and only evaluate the
   * function when they need to produce a new value. The [[Result.andThen andThen]] method can produce a
-  * [[Result]]`[U, E]` value having a different inner type `U` than [[Result]]`[T, E]`. The [[Result.orElse orElse]]
-  * method can produce a [[Result]]`[T, F]` value having a different error type `F` than [[Result]]`[T, E]`.
+  * [[Result]]`[E, U]` value having a different inner type `U` than [[Result]]`[E, T]`. The [[Result.orElse orElse]]
+  * method can produce a [[Result]]`[F, T]` value having a different error type `F` than [[Result]]`[E, T]`.
   *
   * | method                     | self     | function input | function result | output   |
   * |----------------------------|----------|----------------|-----------------|----------|
@@ -176,4 +176,182 @@
   * @note
   * This documentation is a derivative of the [[https://doc.rust-lang.org/std/result/ Rust Result<T, E> documentation]]
   */
-package object result
+package object result {
+  import scala.language.implicitConversions
+
+  /** Implicit conversion wrapper for `Option`
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Some(1).toResult(2)
+    * Ok(1)
+    * }}}
+    */
+  implicit class RichOption[O](val self: Option[O]) extends AnyVal {
+
+    /** An alias of [[toOkOrElse]]
+      *
+      * ==Examples==
+      *
+      * {{{
+      * >>> None.toResult(1)
+      * Err(1)
+      *
+      * >>> Some(2).toResult(1)
+      * Ok(2)
+      * }}}
+      */
+    def toResult[E](default: => E): Result[E, O] =
+      toOkOrElse(default)
+
+    /** Convert an `Option[E]` into a Result[E, T] using `default` for the `Ok` value in the `None` case.
+      *
+      * ==Examples==
+      *
+      * {{{
+      * >>> None.toErrOrElse(1)
+      * Ok(1)
+      *
+      * >>> Some(2).toErrOrElse(1)
+      * Err(2)
+      * }}}
+      */
+    def toErrOrElse[T](default: => T): Result[O, T] =
+      self.map(Err(_)).getOrElse(Ok(default))
+
+    /** Convert an `Option[T]` into a Result[E, T] using `default` for the `Err` value in the `None` case.
+      *
+      * ==Examples==
+      *
+      * {{{
+      * >>> None.toOkOrElse(1)
+      * Err(1)
+      *
+      * >>> Some(2).toOkOrElse(1)
+      * Ok(2)
+      * }}}
+      */
+    def toOkOrElse[E](default: => E): Result[E, O] =
+      self.map(Ok(_)).getOrElse(Err(default))
+
+    /** Convert an `Option[`[[Result]]`[E, T]]` into a [[Result]]`[E, Option[T]]`
+      * with the `None` case being treated as an `Ok`
+      *
+      * ==Examples==
+      *
+      * {{{
+      * >>> Some(Ok(1)).transposeOk
+      * Ok(Some(1))
+      *
+      * >>> Some(Err(2)).transposeOk
+      * Err(2)
+      *
+      * >>> None.transposeOk
+      * Ok(None)
+      * }}}
+      */
+    def transposeOk[T, E](implicit
+        ev: O <:< Result[E, T]
+    ): Result[E, Option[T]] = self match {
+      case Some(result) => ev(result).map(Some(_))
+      case None         => Ok(None)
+    }
+
+    /** Convert an `Option[`[[Result]]`[E, T]]` into a [[Result]]`[E, Option[T]]`
+      * with the `None` case being treated as an `Err`
+      *
+      * ==Examples==
+      *
+      * {{{
+      * >>> Some(Err(1)).transposeErr
+      * Err(Some(1))
+      *
+      * >>> Some(Ok(2)).transposeErr
+      * Ok(2)
+      *
+      * >>> None.transposeErr
+      * Err(None)
+      * }}}
+      */
+    def transposeErr[T, E](implicit
+        ev: O <:< Result[E, T]
+    ): Result[Option[E], T] = self match {
+      case Some(result) => ev(result).mapErr(Some(_))
+      case None         => Err(None)
+    }
+  }
+
+  /** Implicit conversion wrapper for `Either`
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Right(1).toResult
+    * Ok(1)
+    * }}}
+    */
+  implicit class RichEither[L, R](val self: Either[L, R]) extends AnyVal {
+
+    /** Convert an `Either[L, R]` to a [[Result]]`[L, R]`.
+      *
+      * This is useful for the cases where usage of `Either` does not follow the convention that the `Right` value is
+      * used to represent an `Ok`.
+      *
+      * ==Examples==
+      *
+      * {{{
+      * >>> Right(1).toResult
+      * Ok(1)
+      *
+      * >>> Left(2).toResult
+      * Err(2)
+      * }}}
+      */
+    def toResult: Result[L, R] = self match {
+      case Right(ok) => Ok(ok)
+      case Left(e)   => Err(e)
+    }
+
+    /** Convert an `Either[L, R]` to a [[Result]]`[R, L]`.
+      *
+      * This is useful for the cases where usage of `Either` does not follow the convention that the `Right` value is
+      * used to represent an `Ok`.
+      *
+      * ==Examples==
+      *
+      * {{{
+      * >>> Right(1).toSwappedResult
+      * Err(1)
+      *
+      * >>> Left(2).toSwappedResult
+      * Ok(2)
+      * }}}
+      */
+    def toSwappedResult: Result[R, L] = self match {
+      case Left(ok) => Ok(ok)
+      case Right(e) => Err(e)
+    }
+  }
+
+  /** Implicit conversion wrapper for `Try`
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> scala.util.Success(1).toResult
+    * Ok(1)
+    *
+    * >>> case object TestException extends Throwable
+    * >>> val result = scala.util.Failure(TestException).toResult
+    * >>> result.containsErr(TestException)
+    * true
+    * }}}
+    */
+  implicit class RichTry[T](val self: scala.util.Try[T]) extends AnyVal {
+    def toResult: Result[Throwable, T] = self match {
+      case scala.util.Success(ok) => Ok(ok)
+      case scala.util.Failure(e)  => Err(e)
+    }
+  }
+}

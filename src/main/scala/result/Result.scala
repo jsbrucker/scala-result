@@ -20,18 +20,18 @@ package result
   * @groupname Misc Miscellaneous methods
   * @groupprio Misc 8
   */
-sealed trait Result[+T, +E] extends Any {
+sealed trait Result[+E, +T] extends Any {
 
   /** Returns `true` if the result is [[Ok]].
     *
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(-3)
+    * >>> val x: Result[String, Int] = Ok(-3)
     * >>> x.isOk
     * true
     *
-    * >>> val y: Result[Int, String] = Err("Some error message")
+    * >>> val y: Result[String, Int] = Err("Some error message")
     * >>> y.isOk
     * false
     * }}}
@@ -48,15 +48,15 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> val x: Result[String, Int] = Ok(2)
     * >>> x.isOkAnd(_ > 1)
     * true
     *
-    * >>> val y: Result[Int, String] = Ok(0)
+    * >>> val y: Result[String, Int] = Ok(0)
     * >>> y.isOkAnd(_ > 1)
     * false
     *
-    * >>> val z: Result[Int, String] = Err("hey")
+    * >>> val z: Result[String, Int] = Err("hey")
     * >>> z.isOkAnd(_ > 1)
     * false
     * }}}
@@ -73,15 +73,15 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> val x: Result[String, Int] = Ok(2)
     * >>> x.isOkOr(_ == "Foo")
     * true
     *
-    * >>> val y: Result[Int, String] = Err("Foo")
+    * >>> val y: Result[String, Int] = Err("Foo")
     * >>> y.isOkOr(_ == "Foo")
     * true
     *
-    * >>> val z: Result[Int, String] = Err("Bar")
+    * >>> val z: Result[String, Int] = Err("Bar")
     * >>> z.isOkOr(_ == "Foo")
     * false
     * }}}
@@ -98,11 +98,11 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(-3)
+    * >>> val x: Result[String, Int] = Ok(-3)
     * >>> x.isErr
     * false
     *
-    * >>> val y: Result[Int, String] = Err("Some error message")
+    * >>> val y: Result[String, Int] = Err("Some error message")
     * >>> y.isErr
     * true
     * }}}
@@ -119,15 +119,15 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[String, Int] = Err(2)
+    * >>> val x: Result[Int, String] = Err(2)
     * >>> x.isErrAnd(_ > 1)
     * true
     *
-    * >>> val y: Result[String, Int] = Err(0)
+    * >>> val y: Result[Int, String] = Err(0)
     * >>> y.isErrAnd(_ > 1)
     * false
     *
-    * >>> val z: Result[String, Int] = Ok("Some success string")
+    * >>> val z: Result[Int, String] = Ok("Some success string")
     * >>> z.isErrAnd(_ > 1)
     * false
     * }}}
@@ -144,15 +144,15 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[String, Int] = Err(2)
+    * >>> val x: Result[Int, String] = Err(2)
     * >>> x.isErrOr(_ == "Foo")
     * true
     *
-    * >>> val y: Result[String, Int] = Ok("Foo")
+    * >>> val y: Result[Int, String] = Ok("Foo")
     * >>> y.isErrOr(_ == "Foo")
     * true
     *
-    * >>> val z: Result[String, Int] = Ok("Bar")
+    * >>> val z: Result[Int, String] = Ok("Bar")
     * >>> z.isErrOr(_ == "Foo")
     * false
     * }}}
@@ -169,15 +169,15 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> val x: Result[String, Int] = Ok(2)
     * >>> x.contains(2)
     * true
     *
-    * >>> val y: Result[Int, String] = Ok(3)
+    * >>> val y: Result[String, Int] = Ok(3)
     * >>> y.contains(2)
     * false
     *
-    * >>> val z: Result[Int, String] = Err("Some error message")
+    * >>> val z: Result[String, Int] = Err("Some error message")
     * >>> z.contains(2)
     * false
     * }}}
@@ -194,15 +194,15 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> val x: Result[String, Int] = Ok(2)
     * >>> x.containsErr("Some error message")
     * false
     *
-    * >>> val y: Result[Int, String] = Err("Some error message")
+    * >>> val y: Result[String, Int] = Err("Some error message")
     * >>> y.containsErr("Some error message")
     * true
     *
-    * >>> val z: Result[Int, String] = Err("Some other error message")
+    * >>> val z: Result[String, Int] = Err("Some other error message")
     * >>> z.containsErr("Some error message")
     * false
     * }}}
@@ -223,7 +223,7 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Err("emergency failure")
+    * >>> val x: Result[String, Int] = Err("emergency failure")
     * >>> intercept[RuntimeException](x.expect("Testing expect")).getMessage
     * Testing expect: emergency failure
     * }}}
@@ -248,11 +248,11 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> val x: Result[String, Int] = Ok(2)
     * >>> x.unwrap
     * 2
     *
-    * >>> val y: Result[Int, String] = Err("emergency failure")
+    * >>> val y: Result[String, Int] = Err("emergency failure")
     * >>> intercept[RuntimeException](y.unwrap).getMessage
     * called `Result::unwrap` on an `Err` value: emergency failure
     * }}}
@@ -276,11 +276,11 @@ sealed trait Result[+T, +E] extends Any {
     * {{{
     * >>> val default = 2
     *
-    * >>> val x: Result[Int, String] = Ok(9)
+    * >>> val x: Result[String, Int] = Ok(9)
     * >>> x.unwrapOr(default)
     * 9
     *
-    * >>> val y: Result[Int, String] = Err("error")
+    * >>> val y: Result[String, Int] = Err("error")
     * >>> y.unwrapOr(default)
     * 2
     * }}}
@@ -297,7 +297,7 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> Ok[Int, String](2).unwrapOrElse(_.size)
+    * >>> Ok[String, Int](2).unwrapOrElse(_.size)
     * 2
     *
     * >>> Err("foo").unwrapOrElse(_.size)
@@ -320,7 +320,7 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[String, Int] = Ok("unexpected success")
+    * >>> val x: Result[Int, String] = Ok("unexpected success")
     * >>> intercept[RuntimeException](x.expectErr("Testing expect")).getMessage
     * Testing expect: unexpected success
     * }}}
@@ -344,11 +344,11 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[String, Int] = Err(2)
+    * >>> val x: Result[Int, String] = Err(2)
     * >>> x.unwrapErr
     * 2
     *
-    * >>> val y: Result[String, Int] = Ok("unexpected success")
+    * >>> val y: Result[Int, String] = Ok("unexpected success")
     * >>> intercept[RuntimeException](y.unwrapErr).getMessage
     * called `Result::unwrapErr` on an `Ok` value: unexpected success
     * }}}
@@ -394,17 +394,17 @@ sealed trait Result[+T, +E] extends Any {
     * can be used instead of [[unwrap]] as a maintainability safeguard that will fail to compile if the error type of
     * the [[Result]] is later changed to an error that can actually occur.
     *
-    * To leverage this method, the result must match `Result[_, Nothing]`. Because `Nothing` can never be instantiated,
+    * To leverage this method, the result must match `Result[Nothing, _]`. Because `Nothing` can never be instantiated,
     * we can be assured that if the error type is `Nothing` then an [[Err]] cannot be instantiated.
     *
     * ==Examples==
     *
     * {{{
-    * >>> def onlyGoodNews(msg: String): Result[String, Nothing] = Ok("This msg is fine: " + msg)
+    * >>> def onlyGoodNews(msg: String): Result[Nothing, String] = Ok("This msg is fine: " + msg)
     * >>> onlyGoodNews("Some Message").intoOk
     * This msg is fine: Some Message
     *
-    * >>> val possibleError: Result[String, Int] = Ok("Some Message")
+    * >>> val possibleError: Result[Int, String] = Ok("Some Message")
     * possibleError.intoOk // This line would fail to compile because [[intoOk]] cannot prove it isn't an [[Err]].
     * }}}
     *
@@ -421,17 +421,17 @@ sealed trait Result[+T, +E] extends Any {
     * can be used instead of [[unwrapErr]] as a maintainability safeguard that will fail to compile if the error type of
     * the [[Result]] is later changed to an error that can actually occur.
     *
-    * To leverage this method, the result must match `Result[Nothing, _]`. Because `Nothing` can never be instantiated,
+    * To leverage this method, the result must match `Result[_, Nothing]`. Because `Nothing` can never be instantiated,
     * we can be assured that if the error type is `Nothing` then an [[Err]] cannot be instantiated.
     *
     * ==Examples==
     *
     * {{{
-    * >>> def onlyBadNews(msg: String): Result[Nothing, String] = Err("This msg is unacceptable: " + msg)
+    * >>> def onlyBadNews(msg: String): Result[String, Nothing] = Err("This msg is unacceptable: " + msg)
     * >>> onlyBadNews("Some Error").intoErr
     * This msg is unacceptable: Some Error
     *
-    * >>> val possibleOkay: Result[Int, String] = Err("Some Error")
+    * >>> val possibleOkay: Result[String, Int] = Err("Some Error")
     * possibleOkay.intoErr // This line would fail to compile because [[intoErr]] cannot prove it isn't an [[Ok]].
     * }}}
     *
@@ -442,18 +442,18 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => e
   }
 
-  /** Converts from [[Result]]`[T, E]` to `Option[T]`.
+  /** Converts from [[Result]]`[E, T]` to `Option[T]`.
     *
     * Converts `this` into an `Option[T]`, discarding the error, if any.
     *
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> val x: Result[String, Int] = Ok(2)
     * >>> x.ok == Some(2)
     * true
     *
-    * >>> val y: Result[Int, String] = Err("Nothing here")
+    * >>> val y: Result[String, Int] = Err("Nothing here")
     * >>> y.ok == None
     * true
     * }}}
@@ -465,18 +465,18 @@ sealed trait Result[+T, +E] extends Any {
     case _     => None
   }
 
-  /** Converts from [[Result]]`[T, E]` to `Option[E]`.
+  /** Converts from [[Result]]`[E, T]` to `Option[E]`.
     *
     * Converts `this` into an `Option[E]`, discarding the success value, if any.
     *
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, String] = Ok(2)
+    * >>> val x: Result[String, Int] = Ok(2)
     * >>> x.err == None
     * true
     *
-    * >>> val y: Result[Int, String] = Err("Nothing here")
+    * >>> val y: Result[String, Int] = Err("Nothing here")
     * >>> y.err == Some("Nothing here")
     * true
     * }}}
@@ -592,18 +592,18 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x1: Result[Option[Int], String] = Ok(Some(5))
-    * >>> val x2: Option[Result[Int, String]] = Some(Ok(5))
+    * >>> val x1: Result[String, Option[Int]] = Ok(Some(5))
+    * >>> val x2: Option[Result[String, Int]] = Some(Ok(5))
     * >>> x1.transpose == x2
     * true
     *
-    * >>> val y1: Result[Option[Int], String] = Ok(None)
-    * >>> val y2: Option[Result[Int, String]] = None
+    * >>> val y1: Result[String, Option[Int]] = Ok(None)
+    * >>> val y2: Option[Result[String, Int]] = None
     * >>> y1.transpose == y2
     * true
     *
-    * >>> val z1: Result[Option[Int], String] = Err("Some Error")
-    * >>> val z2: Option[Result[Int, String]] = Some(Err("Some Error"))
+    * >>> val z1: Result[String, Option[Int]] = Err("Some Error")
+    * >>> val z2: Option[Result[String, Int]] = Some(Err("Some Error"))
     * >>> z1.transpose == z2
     * true
     * }}}
@@ -612,7 +612,7 @@ sealed trait Result[+T, +E] extends Any {
     */
   def transpose[U](implicit
       ev: T <:< Option[U]
-  ): Option[Result[U, E]] =
+  ): Option[Result[E, U]] =
     this match {
       case Ok(option) =>
         ev(option) match {
@@ -630,18 +630,18 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x1: Result[String, Option[Int]] = Err(Some(5))
-    * >>> val x2: Option[Result[String, Int]] = Some(Err(5))
+    * >>> val x1: Result[Option[Int], String] = Err(Some(5))
+    * >>> val x2: Option[Result[Int, String]] = Some(Err(5))
     * >>> x1.transposeErr == x2
     * true
     *
-    * >>> val y1: Result[String, Option[Int]] = Err(None)
-    * >>> val y2: Option[Result[String, Int]] = None
+    * >>> val y1: Result[Option[Int], String] = Err(None)
+    * >>> val y2: Option[Result[Int, String]] = None
     * >>> y1.transposeErr == y2
     * true
     *
-    * >>> val z1: Result[String, Option[Int]] = Ok("Some Okay")
-    * >>> val z2: Option[Result[String, Int]] = Some(Ok("Some Okay"))
+    * >>> val z1: Result[Option[Int], String] = Ok("Some Okay")
+    * >>> val z2: Option[Result[Int, String]] = Some(Ok("Some Okay"))
     * >>> z1.transposeErr == z2
     * true
     * }}}
@@ -650,7 +650,7 @@ sealed trait Result[+T, +E] extends Any {
     */
   def transposeErr[F](implicit
       ev: E <:< Option[F]
-  ): Option[Result[T, F]] =
+  ): Option[Result[F, T]] =
     this match {
       case Ok(ok) => Some(Ok(ok))
       case Err(option) =>
@@ -660,7 +660,7 @@ sealed trait Result[+T, +E] extends Any {
         }
     }
 
-  /** Maps a [[Result]]`[T, E]` to [[Result]]`[U, E]` by applying a function to a contained [[Ok]] value, leaving an
+  /** Maps a [[Result]]`[E, T]` to [[Result]]`[E, U]` by applying a function to a contained [[Ok]] value, leaving an
     * [[Err]] value untouched.
     *
     * This function can be used to compose the results of two functions.
@@ -683,7 +683,7 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Transform
     */
-  def map[U](op: T => U): Result[U, E] = this match {
+  def map[U](op: T => U): Result[E, U] = this match {
     case Ok(t)  => Ok(op(t))
     case Err(e) => Err(e)
   }
@@ -712,7 +712,7 @@ sealed trait Result[+T, +E] extends Any {
     case Err(_) => default
   }
 
-  /** Maps a [[Result]]`[T, E]` to `U` by applying fallback function default to a contained [[Err]] value, or function
+  /** Maps a [[Result]]`[E, T]` to `U` by applying fallback function default to a contained [[Err]] value, or function
     * `f` to a contained [[Ok]] value.
     *
     * This function can be used to unpack a successful result
@@ -739,7 +739,7 @@ sealed trait Result[+T, +E] extends Any {
     case Err(e) => default(e)
   }
 
-  /** Maps a [[Result]]`[T, E]` to [[Result]]`[T, F]` by applying a function to a contained [[Err]] value, leaving an
+  /** Maps a [[Result]]`[E, T]` to [[Result]]`[F, T]` by applying a function to a contained [[Err]] value, leaving an
     * [[Ok]] value untouched.
     *
     * This function can be used to pass through a successful result while handling an error.
@@ -755,36 +755,36 @@ sealed trait Result[+T, +E] extends Any {
     * >>> Err(2).mapErr(square(_))
     * Err(4)
     *
-    * >>> Ok[String, Int]("Some Value").mapErr(square(_))
+    * >>> Ok[Int, String]("Some Value").mapErr(square(_))
     * Ok(Some Value)
     * }}}
     *
     * @group Transform
     */
-  def mapErr[F](op: E => F): Result[T, F] = this match {
+  def mapErr[F](op: E => F): Result[F, T] = this match {
     case Ok(t)  => Ok(t)
     case Err(e) => Err(op(e))
   }
 
-  /** Converts from `Result[Result[T, E], E]` to `Result[T, E]`
+  /** Converts from `Result[E, Result[E, T]]` to `Result[E, T]`
     *
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Result[String, Int], Int] = Ok(Ok("hello"))
+    * >>> val x: Result[Int, Result[Int, String]] = Ok(Ok("hello"))
     * >>> x.flatten
     * Ok(hello)
     *
-    * >>> val y: Result[Result[String, Int], Int] = Ok(Err(6))
+    * >>> val y: Result[Int, Result[Int, String]] = Ok(Err(6))
     * >>> y.flatten
     * Err(6)
     *
-    * >>> val z: Result[Result[String, Int], Int] = Err(6)
+    * >>> val z: Result[Int, Result[Int, String]] = Err(6)
     * >>> z.flatten
     * Err(6)
     *
     * // Flattening only removes one level of nesting at a time:
-    * >>> val multi: Result[Result[Result[String, Int], Int], Int] = Ok(Ok(Ok("hello")))
+    * >>> val multi: Result[Int, Result[Int, Result[Int, String]]] = Ok(Ok(Ok("hello")))
     *
     * >>> multi.flatten
     * Ok(Ok(hello))
@@ -795,28 +795,28 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Transform
     */
-  def flatten[U, F >: E](implicit ev: T <:< Result[U, F]): Result[U, F] =
+  def flatten[F >: E, U](implicit ev: T <:< Result[F, U]): Result[F, U] =
     andThen(ev)
 
-  /** Converts from `Result[T, Result[T, E]]` to `Result[T, E]`
+  /** Converts from `Result[E, T, Result[T, E]]` to `Result[T]`
     *
     * ==Examples==
     *
     * {{{
-    * >>> val x: Result[Int, Result[Int, String]] = Err(Err("Some Error"))
+    * >>> val x: Result[Result[String, Int], Int] = Err(Err("Some Error"))
     * >>> x.flattenErr
     * Err(Some Error)
     *
-    * >>> val y: Result[Int, Result[Int, String]] = Err(Ok(6))
+    * >>> val y: Result[Result[String, Int], Int] = Err(Ok(6))
     * >>> y.flattenErr
     * Ok(6)
     *
-    * >>> val z: Result[Int, Result[Int, String]] = Ok(6)
+    * >>> val z: Result[Result[String, Int], Int] = Ok(6)
     * >>> z.flattenErr
     * Ok(6)
     *
     * // Flattening only removes one level of nesting at a time:
-    * >>> val multi: Result[Int, Result[Int, Result[Int, String]]] = Err(Err(Err("Some Error")))
+    * >>> val multi: Result[Result[Result[String, Int], Int], Int] = Err(Err(Err("Some Error")))
     *
     * >>> multi.flattenErr
     * Err(Err(Some Error))
@@ -827,7 +827,7 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Transform
     */
-  def flattenErr[U >: T, F](implicit ev: E <:< Result[U, F]): Result[U, F] =
+  def flattenErr[F, U >: T](implicit ev: E <:< Result[F, U]): Result[F, U] =
     orElse(ev)
 
   /** Returns `rhs` if the result is [[Ok]], otherwise returns this [[Err]] value.
@@ -835,22 +835,22 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x1: Result[Int, String] = Ok(2)
+    * >>> val x1: Result[String, Int] = Ok(2)
     * >>> val y1: Result[String, String] = Err("late error")
     * >>> x1.and(y1)
     * Err(late error)
     *
-    * >>> val x2: Result[Int, String] = Err("early error")
+    * >>> val x2: Result[String, Int] = Err("early error")
     * >>> val y2: Result[String, String] = Ok("foo")
     * >>> x2.and(y2)
     * Err(early error)
     *
-    * >>> val x3: Result[Int, String] = Err("not a 2")
+    * >>> val x3: Result[String, Int] = Err("not a 2")
     * >>> val y3: Result[String, String] = Err("late error")
     * >>> x3.and(y3)
     * Err(not a 2)
     *
-    * >>> val x4: Result[Int, String] = Ok(2)
+    * >>> val x4: Result[String, Int] = Ok(2)
     * >>> val y4: Result[String, String] = Ok("different result type")
     * >>> x4.and(y4)
     * Ok(different result type)
@@ -858,7 +858,7 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Boolean
     */
-  def and[U >: T, F >: E](rhs: Result[U, F]): Result[U, F] = this match {
+  def and[F >: E, U >: T](rhs: Result[F, U]): Result[F, U] = this match {
     case Ok(_)  => rhs
     case Err(e) => Err(e)
   }
@@ -871,8 +871,8 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> def ensureEven(x: Int): Result[Int, String] = if (x % 2 == 0) Ok(x) else Err("Odd Number")
-    * >>> def ensurePositive(x: Int): Result[Int, String] = if (x > 0) Ok(x) else Err("Not Positive")
+    * >>> def ensureEven(x: Int): Result[String, Int] = if (x % 2 == 0) Ok(x) else Err("Odd Number")
+    * >>> def ensurePositive(x: Int): Result[String, Int] = if (x > 0) Ok(x) else Err("Not Positive")
     *
     * >>> Ok(2).andThen(ensureEven).andThen(ensurePositive)
     * Ok(2)
@@ -889,7 +889,7 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Boolean
     */
-  def andThen[U, F >: E](op: T => Result[U, F]): Result[U, F] = this match {
+  def andThen[F >: E, U](op: T => Result[F, U]): Result[F, U] = this match {
     case Ok(t)  => op(t)
     case Err(e) => Err(e)
   }
@@ -902,30 +902,30 @@ sealed trait Result[+T, +E] extends Any {
     * ==Examples==
     *
     * {{{
-    * >>> val x1: Result[Int, String] = Ok(2)
-    * >>> val y1: Result[Int, String] = Err("late error")
+    * >>> val x1: Result[String, Int] = Ok(2)
+    * >>> val y1: Result[String, Int] = Err("late error")
     * >>> x1.or(y1)
     * Ok(2)
     *
-    * >>> val x2: Result[Int, String] = Err("early error")
-    * >>> val y2: Result[Int, String] = Ok(2)
+    * >>> val x2: Result[String, Int] = Err("early error")
+    * >>> val y2: Result[String, Int] = Ok(2)
     * >>> x2.or(y2)
     * Ok(2)
     *
-    * >>> val x3: Result[Int, String] = Err("not a 2")
-    * >>> val y3: Result[Int, String] = Err("late error")
+    * >>> val x3: Result[String, Int] = Err("not a 2")
+    * >>> val y3: Result[String, Int] = Err("late error")
     * >>> x3.or(y3)
     * Err(late error)
     *
-    * >>> val x4: Result[Int, String] = Ok(2)
-    * >>> val y4: Result[Int, String] = Ok(100)
+    * >>> val x4: Result[String, Int] = Ok(2)
+    * >>> val y4: Result[String, Int] = Ok(100)
     * >>> x4.or(y4)
     * Ok(2)
     * }}}
     *
     * @group Boolean
     */
-  def or[U >: T, F >: E](rhs: Result[U, F]): Result[U, F] = this match {
+  def or[F >: E, U >: T](rhs: Result[F, U]): Result[F, U] = this match {
     case Err(_) => rhs
     case _      => this
   }
@@ -955,7 +955,7 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Boolean
     */
-  def orElse[U >: T, F](op: E => Result[U, F]): Result[U, F] = this match {
+  def orElse[F, U >: T](op: E => Result[F, U]): Result[F, U] = this match {
     case Ok(t)  => Ok(t)
     case Err(e) => op(e)
   }
@@ -964,20 +964,20 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Misc
     */
-  def flatMap[U, F >: E](op: T => Result[U, F]): Result[U, F] = andThen(op)
+  def flatMap[F >: E, U](op: T => Result[F, U]): Result[F, U] = andThen(op)
 
   /** An alias of [[orElse]] for consistency with Scala naming (`Err` suffix required for disambiguation)
     *
     * @group Misc
     */
-  def flatMapErr[U >: T, F](op: E => Result[U, F]): Result[U, F] = orElse(op)
+  def flatMapErr[F, U >: T](op: E => Result[F, U]): Result[F, U] = orElse(op)
 
   /** Executes the given side-effecting function if this is an `Ok`.
     *
     * ===Examples===
     *
     * {{{
-    * Err[Int, String]("Some Error").inspect(println(_)) // Doesn't print
+    * Err[String, Int]("Some Error").inspect(println(_)) // Doesn't print
     * Ok(5).inspect(println(_)) // Prints 5
     * }}}
     *
@@ -1120,7 +1120,7 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Misc
     */
-  def filterOrElse[F >: E](p: T => Boolean, default: => F): Result[T, F] =
+  def filterOrElse[F >: E](p: T => Boolean, default: => F): Result[F, T] =
     this match {
       case Ok(ok) if !p(ok) => Err(default)
       case _                => this
@@ -1142,43 +1142,43 @@ sealed trait Result[+T, +E] extends Any {
     *
     * @group Misc
     */
-  def filterErrOrElse[U >: T](p: E => Boolean, default: => U): Result[U, E] =
+  def filterErrOrElse[U >: T](p: E => Boolean, default: => U): Result[E, U] =
     this match {
       case Err(b) if !p(b) => Ok(default)
       case _               => this
     }
 
-  /** Upcasts this `Result[T, E]` to `Result[U, E]`
+  /** Upcasts this `Result[E, T]` to `Result[E, U]`
     *
     * Normally used when constructing an [[Err]]
     *
     * {{{
     * scala> Err(1)
-    * res0: Err[Nothing, Int] = Err(1)
+    * res0: Err[Int, Nothing] = Err(1)
     *
     * scala> Err(2).withOk[String]
-    * res1: Result[String, Int] = Err(2)
+    * res1: Result[Int, String] = Err(2)
     * }}}
     *
     * @group Cast
     */
-  def withOk[U >: T]: Result[U, E] = this
+  def withOk[U >: T]: Result[E, U] = this
 
-  /** Upcasts this `Result[T, E]` to `Result[T, F]`
+  /** Upcasts this `Result[E, T]` to `Result[F, T]`
     *
     * Normally used when constructing an [[Ok]]
     *
     * {{{
     * scala> Ok(1)
-    * res0: Ok[Int, Nothing] = Ok(1)
+    * res0: Ok[Nothing, Int] = Ok(1)
     *
     * scala> Ok(2).withErr[String]
-    * res1: Result[Int, String] = Ok(2)
+    * res1: Result[String, Int] = Ok(2)
     * }}}
     *
     * @group Cast
     */
-  def withErr[F >: E]: Result[T, F] = this
+  def withErr[F >: E]: Result[F, T] = this
 }
 
 object Result {
@@ -1188,7 +1188,7 @@ object Result {
 }
 
 /** Contains the success value */
-case class Ok[+T, +E](v: T) extends AnyVal with Result[T, E]
+case class Ok[+E, +T](v: T) extends AnyVal with Result[E, T]
 
 /** Contains the error value */
-case class Err[+T, +E](e: E) extends AnyVal with Result[T, E]
+case class Err[+E, +T](e: E) extends AnyVal with Result[E, T]
