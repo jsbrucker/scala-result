@@ -584,6 +584,57 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => scala.util.Failure(e)
   }
 
+  /** Allows for conversion of a [[Result]]`[E, T]` into an arbitrary type `V`
+    *
+    * This should be used in conjunction with [[Result]]`.apply[E, T, V]` to
+    * construct [[Result]]s from a user defined `V`. This can be helpful when
+    * leveraging custom ADTs.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * >>> sealed trait Case
+    * >>> case class Bad(str: String) extends Case
+    * >>> case class Good(value: Int) extends Case
+    *
+    * >>> val goodInt = 1
+    * >>> val good = Good(goodInt)
+    * >>> val badStr = "Error"
+    * >>> val bad = Bad(badStr)
+    *
+    * // A contrived example:
+    * // NOTE: Using `intoOkOrErr` directly should be preferred for this case
+    *
+    * >>> implicit val caseFromADTResult: FromResult[Bad, Good, Case] = _.intoOkOrErr
+    *
+    * >>> val okADT: Result[Bad, Good] = Ok(good)
+    * >>> okADT.to[Case] == good
+    * true
+    *
+    * >>> val errADT: Result[Bad, Good] = Err(bad)
+    * >>> errADT.to[Case] == bad
+    * true
+    *
+    * // A more interesting example:
+    *
+    * >>> implicit val caseFromPrimitiveResult: FromResult[String, Int, Case] = {
+    * ...   case Ok(v) => Good(v)
+    * ...   case Err(e) => Bad(e)
+    * ... }
+    *
+    * >>> val okPrimitive: Result[String, Int] = Ok(goodInt)
+    * >>> okPrimitive.to[Case] == good
+    * true
+    *
+    * >>> val errPrimitive: Result[String, Int] = Err(badStr)
+    * >>> errPrimitive.to[Case] == bad
+    * true
+    * }}}
+    *
+    * @group Extract
+    */
+  def to[V](implicit fromResult: FromResult[E, T, V]): V = fromResult(this)
+
   /** Transposes a [[Result]] of an Ok `Option` into an `Option` of a [[Result]].
     *
     * `Ok(None)` will be mapped to `None`.
@@ -1159,6 +1210,8 @@ sealed trait Result[+E, +T] extends Any {
   /** Returns the existing `Ok` if this is an `Ok` and the predicate `p` holds for the ok value, or `Err(default)` if
     * the predicate `p` does not hold, else returns the existing `Err`.
     *
+    * ===Examples===
+    *
     * {{{
     * >>> Ok(12).filterOrElse(_ > 10, -1)
     * Ok(12)
@@ -1180,6 +1233,8 @@ sealed trait Result[+E, +T] extends Any {
 
   /** Returns the existing `Err` if this is an `Err` and the predicate `p` holds for the err value, or `Ok(default)` if
     * the predicate `p` does not hold, else returns the existing `Ok`.
+    *
+    * ===Examples===
     *
     * {{{
     * >>> Err(12).filterErrOrElse(_ > 10, -1)
@@ -1204,6 +1259,8 @@ sealed trait Result[+E, +T] extends Any {
     *
     * Normally used when constructing an [[Err]]
     *
+    * ===Examples===
+    *
     * {{{
     * scala> Err(1)
     * res0: Err[Int, Nothing] = Err(1)
@@ -1220,6 +1277,8 @@ sealed trait Result[+E, +T] extends Any {
     *
     * Normally used when constructing an [[Ok]]
     *
+    * ===Examples===
+    *
     * {{{
     * scala> Ok(1)
     * res0: Ok[Nothing, Int] = Ok(1)
@@ -1234,6 +1293,42 @@ sealed trait Result[+E, +T] extends Any {
 }
 
 object Result {
+
+  /** Allows for conversion of an arbitrary type `V` into a [[Result]]`[E, T]`
+    *
+    * This should be used in conjunction with [[Result]]`.to[V]` to extract
+    * construct a user defined `V`.
+    *
+    * ===Examples===
+    *
+    * {{{
+    * >>> sealed trait Case
+    * >>> case class Bad(str: String) extends Case
+    * >>> case class Good(value: Int) extends Case
+    *
+    * >>> val goodInt = 1
+    * >>> val good = Good(goodInt)
+    * >>> val badStr = "Error"
+    * >>> val bad = Bad(badStr)
+    *
+    * >>> implicit val resultFromCase: ToResult[String, Int, Case] = {
+    * ...   case Good(v) => Ok(v)
+    * ...   case Bad(e) => Err(e)
+    * ... }
+    *
+    * >>> Result(good) == Ok(goodInt)
+    * true
+    *
+    * >>> Result(bad) == Err(badStr)
+    * true
+    * }}}
+    *
+    * @group Extract
+    */
+  def apply[E, T, V](value: V)(implicit
+      toResult: ToResult[E, T, V]
+  ): Result[E, T] = toResult(value)
+
   @throws(classOf[RuntimeException])
   private final def unwrapFailed[X, Y](msg: String, value: Y): X =
     throw new RuntimeException(s"$msg: $value")
