@@ -631,7 +631,7 @@ sealed trait Result[+E, +T] extends Any {
     * true
     * }}}
     *
-    * @group Extract
+    * @group Collection
     */
   def to[V](implicit fromResult: FromResult[E, T, V]): V = fromResult(this)
 
