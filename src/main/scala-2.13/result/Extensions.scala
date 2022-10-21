@@ -9,9 +9,10 @@ import scala.language.implicitConversions
   * different Scala versions.
   */
 object Extensions {
-  implicit def toRichOption[O](self: Option[O]): RichOption[O] = RichOption(
-    self
-  )
+  implicit def toRichAny[A](self: A): RichAny[A] = RichAny(self)
+
+  implicit def toRichOption[O](self: Option[O]): RichOption[O] =
+    RichOption(self)
 
   implicit def toRichEither[L, R](self: Either[L, R]): RichEither[L, R] =
     RichEither(self)
