@@ -12,6 +12,7 @@ trait ToResult[+E, +T, -V] {
 }
 
 object ToResult {
+  import Extensions.{toRichTry, toRichEither}
 
   /** Converts `Either[E, T]` into [[Result]]`[E, T]`
     *
