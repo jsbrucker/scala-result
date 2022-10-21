@@ -1,5 +1,7 @@
 package result
 
+import scala.language.implicitConversions
+
 /** Used to convert a value of type `V` to a [[Result]]`[E, T]`
   *
   * This interface is leveraged by the [[Result.apply]] method and
@@ -16,8 +18,6 @@ object ToResult {
     * ===Examples===
     *
     * {{{
-    * >>> import result.ToResult.fromEither
-    *
     * >>> val right: Either[String, Int] = Right(1)
     * >>> Result(right) == Ok(1)
     * true
@@ -35,8 +35,6 @@ object ToResult {
     * ===Examples===
     *
     * {{{
-    * >>> import result.ToResult.fromTry
-    *
     * >>> val success: scala.util.Try[Int] = scala.util.Success(1)
     * >>> Result(success) == Ok(1)
     * true
@@ -67,8 +65,6 @@ object FromResult {
     * ===Examples===
     *
     * {{{
-    * >>> import result.FromResult.toEither
-    *
     * >>> val ok = Ok(1)
     * >>> ok.to[Either[String, Int]] == Right(1)
     * true
@@ -85,8 +81,6 @@ object FromResult {
     * ===Examples===
     *
     * {{{
-    * >>> import result.FromResult.toTry
-    *
     * >>> val ok = Ok(1)
     * >>> ok.to[scala.util.Try[Int]] == scala.util.Success(1)
     * true

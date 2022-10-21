@@ -1294,10 +1294,9 @@ sealed trait Result[+E, +T] extends Any {
 
 object Result {
 
-  /** Allows for conversion of an arbitrary type `V` into a [[Result]]`[E, T]`
+  /** Allows for construction of a [[Result]]`[E, T]` from an arbitrary type `V`
     *
-    * This should be used in conjunction with [[Result]]`.to[V]` to extract
-    * construct a user defined `V`.
+    * NOTE: [[ToResult]] has a implicits defined for `Either` and `Try`
     *
     * ===Examples===
     *
