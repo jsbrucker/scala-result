@@ -25,5 +25,4 @@ Pre-packaged jars are not yet available, but there are plans to make them availa
 * [Official Rust Result Module Documentation](https://doc.rust-lang.org/std/result/)
 * [Official Rust Result Source](https://doc.rust-lang.org/src/core/result.rs.html)
 * [Scala Either Source](https://github.com/scala/scala/blob/v2.13.6/src/library/scala/util/Either.scala)
-  * While there are issues with `Either`'s semantics, the implementation is a good reference.
 * [ycd's result.scala](https://github.com/ycd/result.scala)
