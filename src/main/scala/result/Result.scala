@@ -933,6 +933,27 @@ sealed trait Result[+E, +T] extends Any {
   def flattenErr[F, U >: T](implicit ev: E <:< Result[F, U]): Result[F, U] =
     orElse(ev)
 
+  /** Applies `fOk` if this is an [[Ok]] or `fErr` if this is an [[Err]]
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val ok = Ok[Int, Int](1)
+    * >>> ok.fold(_ - 1, _ + 1)
+    * 2
+    *
+    * >>> val err = Err[Int, Int](-1)
+    * >>> err.fold(_ - 1, _ + 1)
+    * -2
+    * }}}
+    *
+    * @group Transform
+    */
+  def fold[O](fErr: E => O, fOk: T => O): O = this match {
+    case Ok(value)  => fOk(value)
+    case Err(error) => fErr(error)
+  }
+
   /** Returns `rhs` if the result is [[Ok]], otherwise returns this [[Err]] value.
     *
     * ==Examples==
