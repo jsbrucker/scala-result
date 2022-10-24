@@ -2,6 +2,8 @@ MIT License
 
 Copyright (c) 2022 John Brucker
 
+MIT License
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -19,3 +21,33 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+------
+
+Though scala-result began as a clean sheet implementation referencing the API
+documentation for Rust Result and Scala Either, its creation was directly
+inspired by (https://github.com/ycd/result.scala) and was originally intended as
+a drop in replacement (though that is no longer the case).
+
+Copyright (c) 2022 Yagiz Degirmenci
+Licensed under MIT License
+<LICENSE-MIT> or (http://opensource.org/licenses/MIT)
+
+------
+
+Some interfaces, docs, and examples are derived from the Rust Result source.
+(https://github.com/rust-lang/rust/blob/master/library/core/src/result.rs)
+
+Dual-licensed under either (i.e. OR):
+* Apache License, Version 2.0 <LICENSE-APACHE> or (http://www.apache.org/licenses/LICENSE-2.0)
+* MIT License <LICENSE-MIT> or (http://opensource.org/licenses/MIT)
+
+------
+
+Some interfaces, docs, and examples are derived from the Scala Either source.
+(https://github.com/scala/scala/blob/2.13.x/src/library/scala/util/Either.scala)
+
+Copyright (c) 2002-2022 EPFL
+Copyright (c) 2011-2022 Lightbend, Inc.
+Licensed under Apache License, Version 2.0
+<LICENSE-APACHE> or (http://www.apache.org/licenses/LICENSE-2.0)
