@@ -174,7 +174,7 @@
   * [[Result]]`[E, U]` value having a different inner type `U` than [[Result]]`[E, T]`. The [[Result.orElse orElse]]
   * method can produce a [[Result]]`[F, T]` value having a different error type `F` than [[Result]]`[E, T]`.
   *
-  * NOTE: [[Result.flatMap flatMap]] is equivalent to[[Result.andThen andThen]] and it is also provided to consistency
+  * NOTE: [[Result.flatMap flatMap]] is equivalent to [[Result.andThen andThen]] and it is also provided to consistency
   * with typical Scala patterns.
   *
   * | method                     | self     | function input | function result | output   |
@@ -188,9 +188,14 @@
   *
   * ==Implicits==
   *
-  * Extension methods are provided to facilitate conversion of `Option`, `Either`, and `Try` types to a [[Result]].
-  * They are available by importing the [[Extensions.toRichOption]], [[Extensions.toRichEither]], and
-  * [[Extensions.toRichTry]] respectively.
+  * Extension methods are provided to facilitate conversion of several types to a [[Result]].
+  *   - `Option` See: [[Extensions.toRichOption]]
+  *   - `Either` See: [[Extensions.toRichEither]]
+  *   - `Try` See: [[Extensions.toRichTry]]
+  *   - Finally: [[Extensions.toRichAny]] adds [[RichAny.asOk asOk]] and [[RichAny.asErr asErr]] methods to any type to
+  *     wrap values in [[Ok]] or [[Err]] respectively.
+  *
+  * When using Scala 2.13 [[Extensions.toRichIterableOps]] is available for processing collections of [[Result]]s.
   *
   * The implicit defs within [[ImplicitConversions]] may be imported to facilitate treating custom ADTs as [[Result]]s
   * and vice-versa.
