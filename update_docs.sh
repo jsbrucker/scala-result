@@ -9,8 +9,8 @@ mkdir $TEMP_DIR/scala-2.12
 cp -rf target/jvm-2.12/api $TEMP_DIR/scala-2.12
 
 pushd $TEMP_DIR
-  git init
+  git init -b gh-pages
   git add -A
   git commit -m 'deploy docs'
-  git push -f git@github.com:jsbrucker/scala-result.git master:gh-pages
+  git push -f git@github.com:jsbrucker/scala-result.git gh-pages
 popd
