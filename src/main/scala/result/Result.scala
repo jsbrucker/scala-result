@@ -1367,8 +1367,50 @@ object Result {
     throw new RuntimeException(s"$msg: $value")
 }
 
-/** Contains the success value */
-case class Ok[+E, +T](v: T) extends AnyVal with Result[E, T]
+/** Contains the success value
+  *
+  * @groupname Extract Extracting contained values
+  * @groupprio Extract 1
+  */
+case class Ok[+E, +T](v: T) extends AnyVal with Result[E, T] {
+  /** Returns the contained [[Ok]] value, but never throws
+    *
+    * Unlike [[unwrap]], this method is known to never throw.
+    * Related: [[Result.intoOk]]
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val ok = Ok("Some Message")
+    * >>> ok.intoOk
+    * Some Message
+    * }}}
+    *
+    * @group Extract
+    */
+  def intoOk: T = v
+}
 
-/** Contains the error value */
-case class Err[+E, +T](e: E) extends AnyVal with Result[E, T]
+/** Contains the error value
+  *
+  * @groupname Extract Extracting contained values
+  * @groupprio Extract 1
+  */
+case class Err[+E, +T](e: E) extends AnyVal with Result[E, T] {
+  /** Returns the contained [[Err]] value, but never throws
+    *
+    * Unlike [[unwrap]], this method is known to never throw.
+    * Related: [[Result.intoErr]]
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val err = Err("Some Error")
+    * >>> err.intoErr
+    * Some Error
+    * }}}
+    *
+    * @group Extract
+    */
+  def intoErr: E = e
+}
