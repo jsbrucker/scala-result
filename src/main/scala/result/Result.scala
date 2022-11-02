@@ -880,6 +880,56 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => Err(op(e))
   }
 
+    /** Returns the provided default (if [[Ok]]), or applies a function to the contained value (if [[Err]]),
+    *
+    * Arguments passed to `mapErrOr` are eagerly evaluated; if you are passing the result of a function call, it is
+    * recommended to use [[mapErrOrElse]], which is lazily evaluated.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[String, String] = Err("foo")
+    * >>> x.mapErrOr(42, _.size)
+    * 3
+    *
+    * >>> val y: Result[String, String] = Ok("bar")
+    * >>> y.mapErrOr(42, _.size)
+    * 42
+    * }}}
+    *
+    * @group Transform
+    */
+  def mapErrOr[F](default: F, f: E => F): F = this match {
+    case Ok(_) => default
+    case Err(e)  => f(e)
+  }
+
+  /** Maps a [[Result]]`[E, T]` to `F` by applying fallback function default to a contained [[Ok]] value, or function
+    * `f` to a contained [[Err]] value.
+    *
+    * This function can be used to unpack a successful result while handling an error.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val k = 21
+    *
+    * >>> val x: Result[String, String] = Err("foo")
+    * >>> x.mapErrOrElse(_ => k * 2, _.size)
+    * 3
+    *
+    * >>> val y: Result[String, String] = Ok("bar")
+    * >>> y.mapErrOrElse(_ => k * 2, _.size)
+    * 42
+    * }}}
+    *
+    * @group Transform
+    */
+  def mapErrOrElse[F](default: T => F, f: E => F): F = this match {
+    case Err(e)  => f(e)
+    case Ok(t) => default(t)
+  }
+
   /** Converts from `Result[E, Result[E, T]]` to `Result[E, T]`
     *
     * ==Examples==
