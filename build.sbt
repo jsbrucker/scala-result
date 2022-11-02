@@ -1,5 +1,4 @@
-import com.github.tkawachi.doctest.DoctestPlugin.autoImport.doctestScalaTestVersion
-
+organization := "dev.jsbrucker"
 name := "scala-result"
 version := "0.1.0-SNAPSHOT"
 
