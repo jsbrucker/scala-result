@@ -3,7 +3,7 @@ sbt + doc
 TEMP_DIR=$(mktemp -d)
 echo $TEMP_DIR
 cp README.md $TEMP_DIR/index.md
-cp docs/* $TEMP_DIR/
+cp pages/* $TEMP_DIR/
 mkdir $TEMP_DIR/scala-2.13
 cp -rf target/jvm-2.13/api $TEMP_DIR/scala-2.13
 mkdir $TEMP_DIR/scala-2.12
