@@ -995,6 +995,24 @@ sealed trait Result[+E, +T] extends Any {
   def flattenErr[F, U >: T](implicit
       @implicitNotFound("${E} is not a Result[${F}, ${U}]") ev: E <:< Result[F, U]
   ): Result[F, U] = orElse(ev)
+ 
+  /** An alias of [[flatten]] for consistency with `Either` API, analogous to `joinRight`
+    *
+    * @group Transform
+    */ 
+  def joinOk[F >: E, U](implicit
+      @implicitNotFound("${T} is not a Result[${F}, ${U}]") ev: T <:< Result[F, U]
+  ): Result[F, U] = flatten(ev)
+
+  /** An alias of [[flattenErr]] for consistency with `Either` API, analogous to `joinLeft`
+    *
+    * @group Transform
+    */
+  def joinErr[F, U >: T](implicit
+      @implicitNotFound("${E} is not a Result[${F}, ${U}]") ev: E <:< Result[F, U]
+  ): Result[F, U] = flattenErr(ev)
+  
+
 
   /** Applies `fOk` if this is an [[Ok]] or `fErr` if this is an [[Err]]
     *
