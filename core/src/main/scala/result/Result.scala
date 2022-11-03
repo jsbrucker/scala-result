@@ -1053,7 +1053,7 @@ sealed trait Result[+E, +T] extends Any {
   /** Calls `op` if the [[Result]] is [[Ok]], otherwise returns this [[Err]] value.
     *
     * This function can be used for control flow based on `Result` values. Often used to chain fallible operations that
-    * may return [[`Err`]].
+    * may return [[Err]].
     *
     * An alias of [[flatMap]]
     *
