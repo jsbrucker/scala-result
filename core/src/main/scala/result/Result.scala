@@ -400,8 +400,10 @@ sealed trait Result[+E, +T] extends Any {
     * @group Extract
     */
   def intoOkOrErr[R](implicit
-      @implicitNotFound("${T} is not a ${R}") vr: T <:< R,
-      @implicitNotFound("${E} is not a ${R}") er: E <:< R
+      @implicitNotFound("${T} is not a ${R}")
+      vr: T <:< R,
+      @implicitNotFound("${E} is not a ${R}")
+      er: E <:< R
   ): R = this match {
     case Ok(v)  => vr(v)
     case Err(e) => er(e)
@@ -432,9 +434,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Extract
     */
   def intoOk(implicit
-      @implicitNotFound(
-        "Result[${E}, ${T}] is not an Ok[Nothing, ${T}]"
-      ) ev: E <:< Nothing
+      @implicitNotFound("Result[${E}, ${T}] is not an Ok[Nothing, ${T}]")
+      ev: E <:< Nothing
   ): T = this match {
     case Ok(v)  => v
     case Err(e) => ev(e) // Unreachable
@@ -466,9 +467,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Extract
     */
   def intoErr(implicit
-      @implicitNotFound(
-        "Result[${E}, ${T}] is not an Err[${E}, Nothing]"
-      ) ev: T <:< Nothing
+      @implicitNotFound("Result[${E}, ${T}] is not an Err[${E}, Nothing]")
+      ev: T <:< Nothing
   ): E = this match {
     case Ok(v)  => ev(v) // Unreachable
     case Err(e) => e
@@ -617,7 +617,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Collection
     */
   def toTry(implicit
-      @implicitNotFound("${E} is not a Throwable") ev: E <:< Throwable
+      @implicitNotFound("${E} is not a Throwable")
+      ev: E <:< Throwable
   ): scala.util.Try[T] = this match {
     case Ok(ok) => scala.util.Success(ok)
     case Err(e) => scala.util.Failure(e)
@@ -701,7 +702,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Collection
     */
   def transposeOption[U](implicit
-      @implicitNotFound("${T} is not an Option[${U}]") ev: T <:< Option[U]
+      @implicitNotFound("${T} is not an Option[${U}]")
+      ev: T <:< Option[U]
   ): Option[Result[E, U]] =
     this match {
       case Ok(option) => ev(option).map(Ok(_))
@@ -735,7 +737,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Collection
     */
   def transposeOptionErr[F](implicit
-      @implicitNotFound("${E} is not an Option[${F}]") ev: E <:< Option[F]
+      @implicitNotFound("${E} is not an Option[${F}]")
+      ev: E <:< Option[F]
   ): Option[Result[F, T]] =
     this match {
       case Ok(ok)      => Some(Ok(ok))
@@ -765,9 +768,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Collection
     */
   def transposeFuture[U](implicit
-      @implicitNotFound(
-        "${T} is not a Future[${U}]"
-      ) ev: T <:< scala.concurrent.Future[U],
+      @implicitNotFound("${T} is not a Future[${U}]")
+      ev: T <:< scala.concurrent.Future[U],
       executor: scala.concurrent.ExecutionContext
   ): scala.concurrent.Future[Result[E, U]] =
     this match {
@@ -798,9 +800,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Collection
     */
   def transposeFutureErr[F](implicit
-      @implicitNotFound(
-        "${E} is not a Future[${F}]"
-      ) ev: E <:< scala.concurrent.Future[F],
+      @implicitNotFound("${E} is not a Future[${F}]")
+      ev: E <:< scala.concurrent.Future[F],
       executor: scala.concurrent.ExecutionContext
   ): scala.concurrent.Future[Result[F, T]] =
     this match {
@@ -1000,10 +1001,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Transform
     */
   def flatten[F >: E, U](implicit
-      @implicitNotFound("${T} is not a Result[${F}, ${U}]") ev: T <:< Result[
-        F,
-        U
-      ]
+      @implicitNotFound("${T} is not a Result[${F}, ${U}]")
+      ev: T <:< Result[F, U]
   ): Result[F, U] = andThen(ev)
 
   /** Converts from `Result[E, T, Result[T, E]]` to `Result[T]`
@@ -1036,10 +1035,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Transform
     */
   def flattenErr[F, U >: T](implicit
-      @implicitNotFound("${E} is not a Result[${F}, ${U}]") ev: E <:< Result[
-        F,
-        U
-      ]
+      @implicitNotFound("${E} is not a Result[${F}, ${U}]")
+      ev: E <:< Result[F, U]
   ): Result[F, U] = orElse(ev)
 
   /** An alias of [[flatten]] for consistency with `Either` API, analogous to
@@ -1048,10 +1045,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Transform
     */
   def joinOk[F >: E, U](implicit
-      @implicitNotFound("${T} is not a Result[${F}, ${U}]") ev: T <:< Result[
-        F,
-        U
-      ]
+      @implicitNotFound("${T} is not a Result[${F}, ${U}]")
+      ev: T <:< Result[F, U]
   ): Result[F, U] = flatten(ev)
 
   /** An alias of [[flattenErr]] for consistency with `Either` API, analogous to
@@ -1060,10 +1055,8 @@ sealed trait Result[+E, +T] extends Any {
     * @group Transform
     */
   def joinErr[F, U >: T](implicit
-      @implicitNotFound("${E} is not a Result[${F}, ${U}]") ev: E <:< Result[
-        F,
-        U
-      ]
+      @implicitNotFound("${E} is not a Result[${F}, ${U}]")
+      ev: E <:< Result[F, U]
   ): Result[F, U] = flattenErr(ev)
 
   /** Applies `fOk` if this is an `Ok` or `fErr` if this is an `Err`
