@@ -14,7 +14,8 @@
 # sbt
 # (may want to keep parts of 'project')
 bin/
-project/
+project/*
+!project/plugins.sbt
 target/
 build/
 

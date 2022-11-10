@@ -4,9 +4,9 @@ import scala.language.implicitConversions
 
 /** Implicit conversions used to add extension methods
   *
-  * Implemented this way instead of leveraging implicit classes to minimize
-  * code duplication otherwise required by exposing different APIs for for
-  * different Scala versions.
+  * Implemented this way instead of leveraging implicit classes to minimize code
+  * duplication otherwise required by exposing different APIs for for different
+  * Scala versions.
   */
 object Extensions {
   implicit def toRichAny[A](self: A): RichAny[A] = RichAny(self)
