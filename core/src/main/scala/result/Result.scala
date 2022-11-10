@@ -1521,6 +1521,25 @@ case class Ok[+E, +T](v: T) extends AnyVal with Result[E, T] {
   def intoOk: T = v
 }
 
+object Ok {
+
+  /** Returns an `Ok` value containing `Unit`
+    *
+    * It is often desirable to return that an operation succeeded but no
+    * additional details are necessary. `unit` may be used in such cases to
+    * avoid instantiating a new instance.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val result: Result[String, Unit] = Ok.unit
+    * >>> result.isOk
+    * true
+    * }}}
+    */
+  val unit: Ok[Nothing, Unit] = Ok(())
+}
+
 /** Contains the error value
   *
   * @groupname Extract Extracting contained values
@@ -1544,4 +1563,23 @@ case class Err[+E, +T](e: E) extends AnyVal with Result[E, T] {
     * @group Extract
     */
   def intoErr: E = e
+}
+
+object Err {
+
+  /** Returns an `Err` value containing `Unit`
+    *
+    * It is often desirable to return simply that an operation failed with an
+    * error but no additional details are necessary. `unit` may be used in such
+    * cases to avoid instantiating a new instance.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val result: Result[Unit, String] = Err.unit
+    * >>> result.isErr
+    * true
+    * }}}
+    */
+  val unit: Err[Unit, Nothing] = Err(())
 }
