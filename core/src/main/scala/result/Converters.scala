@@ -2,7 +2,7 @@ package result
 
 import scala.language.implicitConversions
 
-/** Used to convert a value of type `V` to a [[Result]]`[E, T]`
+/** Used to convert a value of type `V` to a `Result[E, T]`
   *
   * This interface is leveraged by the [[Result.apply]] method and
   * [[ImplicitConversions.toResult]].
@@ -14,7 +14,7 @@ trait ToResult[+E, +T, -V] {
 object ToResult {
   import Extensions.{toRichTry, toRichEither}
 
-  /** Converts `Either[E, T]` into [[Result]]`[E, T]`
+  /** Converts `Either[E, T]` into `Result[E, T]`
     *
     * ===Examples===
     *
@@ -31,7 +31,7 @@ object ToResult {
   implicit def fromEither[E, T]: ToResult[E, T, Either[E, T]] =
     _.toResult
 
-  /** Converts `Try[T]` into [[Result]]`[Throwable, T]`
+  /** Converts `Try[T]` into `Result[Throwable, T]`
     *
     * ===Examples===
     *
@@ -50,7 +50,7 @@ object ToResult {
     _.toResult
 }
 
-/** Used to convert a [[Result]]`[E, T]` to a value of type `V`
+/** Used to convert a `Result[E, T]` to a value of type `V`
   *
   * This interface is leveraged by the [[Result.to]] method and
   * [[ImplicitConversions.fromResult]].
@@ -61,7 +61,7 @@ trait FromResult[-E, -T, +V] {
 
 object FromResult {
 
-  /** Converts [[Result]]`[E, T]` into `Either[E, T]`
+  /** Converts `Result[E, T]` into `Either[E, T]`
     *
     * ===Examples===
     *
@@ -77,7 +77,7 @@ object FromResult {
     */
   implicit def toEither[E, T]: FromResult[E, T, Either[E, T]] = _.toEither
 
-  /** Converts [[Result]]`[Throwable, T]` into `Try[T]`
+  /** Converts `Result[Throwable, T]` into `Try[T]`
     *
     * ===Examples===
     *

@@ -4,7 +4,7 @@ import scala.annotation.implicitNotFound
 
 /** A Rust `Result<T, E>` inspired interface for handling results.
   *
-  * [[Result]] is a type that represents either success ([[Ok]]) or failure
+  * `Result` is a type that represents either success ([[Ok]]) or failure
   * ([[Err]]). See the [[result package documentation]] for details.
   *
   * @groupname Query Querying the variant
@@ -24,7 +24,7 @@ import scala.annotation.implicitNotFound
   */
 sealed trait Result[+E, +T] extends Any {
 
-  /** Returns `true` if the result is [[Ok]].
+  /** Returns `true` if the result is `Ok`.
     *
     * ==Examples==
     *
@@ -45,8 +45,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(_) => false
   }
 
-  /** Returns `true` if the result is [[Ok]] and the value inside of it matches
-    * a predicate.
+  /** Returns `true` if the result is `Ok` and the value inside of it matches a
+    * predicate.
     *
     * ==Examples==
     *
@@ -71,7 +71,7 @@ sealed trait Result[+E, +T] extends Any {
     case Err(_) => false
   }
 
-  /** Returns `true` if the result is [[Ok]] or the error value matches a
+  /** Returns `true` if the result is `Ok` or the error value matches a
     * predicate.
     *
     * ==Examples==
@@ -97,7 +97,7 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => f(e)
   }
 
-  /** Returns `true` if the result is [[Err]].
+  /** Returns `true` if the result is `Err`.
     *
     * ==Examples==
     *
@@ -118,8 +118,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(_) => true
   }
 
-  /** Returns `true` if the result is [[Err]] and the value inside of it matches
-    * a predicate.
+  /** Returns `true` if the result is `Err` and the value inside of it matches a
+    * predicate.
     *
     * ==Examples==
     *
@@ -144,7 +144,7 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => f(e)
   }
 
-  /** Returns `true` if the result is [[Err]] or the okay value matches a
+  /** Returns `true` if the result is `Err` or the okay value matches a
     * predicate.
     *
     * ==Examples==
@@ -170,8 +170,7 @@ sealed trait Result[+E, +T] extends Any {
     case Err(_) => true
   }
 
-  /** Returns `true` if the result is an [[Ok]] value containing the given
-    * value.
+  /** Returns `true` if the result is an `Ok` value containing the given value.
     *
     * ==Examples==
     *
@@ -196,8 +195,7 @@ sealed trait Result[+E, +T] extends Any {
     case Ok(v)  => v == x
   }
 
-  /** Returns `true` if the result is an [[Err]] value containing the given
-    * value.
+  /** Returns `true` if the result is an `Err` value containing the given value.
     *
     * ==Examples==
     *
@@ -222,12 +220,12 @@ sealed trait Result[+E, +T] extends Any {
     case Ok(_)  => false
   }
 
-  /** Returns the contained [[Ok]] value.
+  /** Returns the contained `Ok` value.
     *
     * ==Throws==
     *
-    * Throws if the value is an [[Err]], with a exception message combining the
-    * passed message and the [[Err]]'s value.
+    * Throws if the value is an `Err`, with a exception message combining the
+    * passed message and the `Err`'s value.
     *
     * ==Examples==
     *
@@ -245,16 +243,16 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => Result.unwrapFailed(msg, e)
   }
 
-  /** Returns the contained [[Ok]] value.
+  /** Returns the contained `Ok` value.
     *
     * Because this function may panic, its use is generally discouraged.
-    * Instead, prefer to use pattern matching and handle the [[Err]] case
+    * Instead, prefer to use pattern matching and handle the `Err` case
     * explicitly, or call [[unwrapOr]] or [[unwrapOrElse]].
     *
     * ==Throws==
     *
-    * Throws if the value is an [[Err]], with a exception message provided by
-    * the [[Err]]'s value.
+    * Throws if the value is an `Err`, with a exception message provided by the
+    * `Err`'s value.
     *
     * ==Examples==
     *
@@ -277,7 +275,7 @@ sealed trait Result[+E, +T] extends Any {
       Result.unwrapFailed("called `Result::unwrap` on an `Err` value", e)
   }
 
-  /** Returns the contained [[Ok]] value or a provided default.
+  /** Returns the contained `Ok` value or a provided default.
     *
     * Arguments passed to [[Result.unwrapOr unwrapOr]] are eagerly evaluated; if
     * you are passing the result of a function call, it is recommended to use
@@ -304,8 +302,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(_) => default
   }
 
-  /** Returns the contained [[Ok]] value or computes it from a provided function
-    * applied to the [[Err]] value.
+  /** Returns the contained `Ok` value or computes it from a provided function
+    * applied to the `Err` value.
     *
     * ==Examples==
     *
@@ -324,12 +322,12 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => op(e)
   }
 
-  /** Returns the contained [[Err]] value.
+  /** Returns the contained `Err` value.
     *
     * ==Throws==
     *
-    * Throws if the value is an [[Ok]], with a exception message combining the
-    * passed message and the [[Ok]]'s value.
+    * Throws if the value is an `Ok`, with a exception message combining the
+    * passed message and the `Ok`'s value.
     *
     * ==Examples==
     *
@@ -346,16 +344,16 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => e
   }
 
-  /** Returns the contained [[Err]] value.
+  /** Returns the contained `Err` value.
     *
     * Because this function may panic, its use is generally discouraged.
-    * Instead, prefer to use pattern matching and handle the [[Ok]] case
+    * Instead, prefer to use pattern matching and handle the `Ok` case
     * explicitly.
     *
     * ==Throws==
     *
-    * Throws if the value is an [[Ok]], with a exception message provided by the
-    * [[Ok]]'s value.
+    * Throws if the value is an `Ok`, with a exception message provided by the
+    * `Ok`'s value.
     *
     * ==Examples==
     *
@@ -378,13 +376,13 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => e
   }
 
-  /** Returns the contained [[Ok]] value if an [[Ok]], and the contained [[Err]]
-    * value if an [[Err]]
+  /** Returns the contained `Ok` value if an `Ok`, and the contained `Err` value
+    * if an `Err`
     *
-    * In other words, this function returns the value (the `R`) of a
-    * [[Result]]`[R, R]`, regardless of whether or not that result is [[Ok]] or
-    * [[Err]]. This can be useful in rare cases when it doesn't matter whether
-    * the result was a success or failure.
+    * In other words, this function returns the value (the `R`) of a `Result[R,
+    * R]`, regardless of whether or not that result is `Ok` or `Err`. This can
+    * be useful in rare cases when it doesn't matter whether the result was a
+    * success or failure.
     *
     * ==Examples==
     *
@@ -409,16 +407,16 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => er(e)
   }
 
-  /** Returns the contained [[Ok]] value, but never throws
+  /** Returns the contained `Ok` value, but never throws
     *
     * Unlike [[unwrap]], this method is known to never throw on the result types
     * it is implemented for. Therefore, it can be used instead of [[unwrap]] as
     * a maintainability safeguard that will fail to compile if the error type of
-    * the [[Result]] is later changed to an error that can actually occur.
+    * the `Result` is later changed to an error that can actually occur.
     *
     * To leverage this method, the result must match `Result[Nothing, _]`.
     * Because `Nothing` can never be instantiated, we can be assured that if the
-    * error type is `Nothing` then an [[Err]] cannot be instantiated.
+    * error type is `Nothing` then an `Err` cannot be instantiated.
     *
     * ==Examples==
     *
@@ -428,7 +426,7 @@ sealed trait Result[+E, +T] extends Any {
     * This msg is fine: Some Message
     *
     * >>> val possibleError: Result[Int, String] = Ok("Some Message")
-    * possibleError.intoOk // This line would fail to compile because [[intoOk]] cannot prove it isn't an [[Err]].
+    * possibleError.intoOk // This line would fail to compile because [[intoOk]] cannot prove it isn't an `Err`.
     * }}}
     *
     * @group Extract
@@ -442,17 +440,17 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => ev(e) // Unreachable
   }
 
-  /** Returns the contained [[Err]] value, but never throws
+  /** Returns the contained `Err` value, but never throws
     *
     * Unlike [[unwrapErr]], this method is known to never throw on the result
     * types it is implemented for. Therefore, it can be used instead of
     * [[unwrapErr]] as a maintainability safeguard that will fail to compile if
-    * the error type of the [[Result]] is later changed to an error that can
+    * the error type of the `Result` is later changed to an error that can
     * actually occur.
     *
     * To leverage this method, the result must match `Result[_, Nothing]`.
     * Because `Nothing` can never be instantiated, we can be assured that if the
-    * error type is `Nothing` then an [[Err]] cannot be instantiated.
+    * error type is `Nothing` then an `Err` cannot be instantiated.
     *
     * ==Examples==
     *
@@ -462,7 +460,7 @@ sealed trait Result[+E, +T] extends Any {
     * This msg is unacceptable: Some Error
     *
     * >>> val possibleOkay: Result[String, Int] = Err("Some Error")
-    * possibleOkay.intoErr // This line would fail to compile because [[intoErr]] cannot prove it isn't an [[Ok]].
+    * possibleOkay.intoErr // This line would fail to compile because [[intoErr]] cannot prove it isn't an `Ok`.
     * }}}
     *
     * @group Extract
@@ -476,7 +474,7 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => e
   }
 
-  /** Converts from [[Result]]`[E, T]` to `Option[T]`.
+  /** Converts from `Result[E, T]` to `Option[T]`.
     *
     * Converts `this` into an `Option[T]`, discarding the error, if any.
     *
@@ -499,7 +497,7 @@ sealed trait Result[+E, +T] extends Any {
     case _     => None
   }
 
-  /** Converts from [[Result]]`[E, T]` to `Option[E]`.
+  /** Converts from `Result[E, T]` to `Option[E]`.
     *
     * Converts `this` into an `Option[E]`, discarding the success value, if any.
     *
@@ -625,10 +623,10 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => scala.util.Failure(e)
   }
 
-  /** Allows for conversion of a [[Result]]`[E, T]` into an arbitrary type `V`
+  /** Allows for conversion of a `Result[E, T]` into an arbitrary type `V`
     *
-    * This should be used in conjunction with [[Result]]`.apply[E, T, V]` to
-    * construct [[Result]]s from a user defined `V`. This can be helpful when
+    * This should be used in conjunction with `Result.apply[E, T, V]` to
+    * construct `Result`s from a user defined `V`. This can be helpful when
     * leveraging custom ADTs.
     *
     * ===Examples===
@@ -676,8 +674,7 @@ sealed trait Result[+E, +T] extends Any {
     */
   def to[V](implicit fromResult: FromResult[E, T, V]): V = fromResult(this)
 
-  /** Transposes a [[Result]] of an Ok `Option` into an `Option` of a
-    * [[Result]].
+  /** Transposes a `Result` of an Ok `Option` into an `Option` of a `Result`.
     *
     * `Ok(None)` will be mapped to `None`. `Ok(Some(_))` and `Err(_)` will be
     * mapped to `Some(Ok(_))` and `Some(Err(_))`.
@@ -711,8 +708,7 @@ sealed trait Result[+E, +T] extends Any {
       case Err(e)     => Some(Err(e))
     }
 
-  /** Transposes a [[Result]] of an `Err` `Option` into an `Option` of a
-    * [[Result]].
+  /** Transposes a `Result` of an `Err` `Option` into an `Option` of a `Result`.
     *
     * `Err(None)` will be mapped to `None`. `Err(Some(_))` and `Ok(_)` will be
     * mapped to `Some(Err(_))` and `Some(Ok(_))`.
@@ -746,8 +742,7 @@ sealed trait Result[+E, +T] extends Any {
       case Err(option) => ev(option).map(Err(_))
     }
 
-  /** Transposes a [[Result]] of an Ok `Future` into an `Future` of a
-    * [[Result]].
+  /** Transposes a `Result` of an Ok `Future` into an `Future` of a `Result`.
     *
     * `Ok(Future(_))` and `Err(_)` will be mapped to `Future(Ok(_))` and
     * `Future(Err(_))`.
@@ -780,8 +775,7 @@ sealed trait Result[+E, +T] extends Any {
       case Err(e)     => scala.concurrent.Future(Err(e))
     }
 
-  /** Transposes a [[Result]] of an `Err` `Future` into an `Future` of a
-    * [[Result]].
+  /** Transposes a `Result` of an `Err` `Future` into an `Future` of a `Result`.
     *
     * `Err(Future(_))` and `Ok(_)` will be mapped to `Future(Err(_))` and
     * `Future(Ok(_))`.
@@ -814,8 +808,8 @@ sealed trait Result[+E, +T] extends Any {
       case Err(future) => ev(future).map(Err(_))
     }
 
-  /** Maps a [[Result]]`[E, T]` to [[Result]]`[E, U]` by applying a function to
-    * a contained [[Ok]] value, leaving an [[Err]] value untouched.
+  /** Maps a `Result[E, T]` to `Result[E, U]` by applying a function to a
+    * contained `Ok` value, leaving an `Err` value untouched.
     *
     * This function can be used to compose the results of two functions.
     *
@@ -842,8 +836,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => Err(e)
   }
 
-  /** Returns the provided default (if [[Err]]), or applies a function to the
-    * contained value (if [[Ok]]),
+  /** Returns the provided default (if `Err`), or applies a function to the
+    * contained value (if `Ok`),
     *
     * Arguments passed to `mapOr` are eagerly evaluated; if you are passing the
     * result of a function call, it is recommended to use [[mapOrElse]], which
@@ -868,8 +862,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(_) => default
   }
 
-  /** Maps a [[Result]]`[E, T]` to `U` by applying fallback function default to
-    * a contained [[Err]] value, or function `f` to a contained [[Ok]] value.
+  /** Maps a `Result[E, T]` to `U` by applying fallback function default to a
+    * contained `Err` value, or function `f` to a contained `Ok` value.
     *
     * This function can be used to unpack a successful result while handling an
     * error.
@@ -895,8 +889,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => default(e)
   }
 
-  /** Maps a [[Result]]`[E, T]` to [[Result]]`[F, T]` by applying a function to
-    * a contained [[Err]] value, leaving an [[Ok]] value untouched.
+  /** Maps a `Result[E, T]` to `Result[F, T]` by applying a function to a
+    * contained `Err` value, leaving an `Ok` value untouched.
     *
     * This function can be used to pass through a successful result while
     * handling an error.
@@ -923,8 +917,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => Err(op(e))
   }
 
-  /** Returns the provided default (if [[Ok]]), or applies a function to the
-    * contained value (if [[Err]]),
+  /** Returns the provided default (if `Ok`), or applies a function to the
+    * contained value (if `Err`),
     *
     * Arguments passed to `mapErrOr` are eagerly evaluated; if you are passing
     * the result of a function call, it is recommended to use [[mapErrOrElse]],
@@ -949,8 +943,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => f(e)
   }
 
-  /** Maps a [[Result]]`[E, T]` to `F` by applying fallback function default to
-    * a contained [[Ok]] value, or function `f` to a contained [[Err]] value.
+  /** Maps a `Result[E, T]` to `F` by applying fallback function default to a
+    * contained `Ok` value, or function `f` to a contained `Err` value.
     *
     * This function can be used to unpack a successful result while handling an
     * error.
@@ -1072,7 +1066,7 @@ sealed trait Result[+E, +T] extends Any {
       ]
   ): Result[F, U] = flattenErr(ev)
 
-  /** Applies `fOk` if this is an [[Ok]] or `fErr` if this is an [[Err]]
+  /** Applies `fOk` if this is an `Ok` or `fErr` if this is an `Err`
     *
     * ==Examples==
     *
@@ -1093,8 +1087,7 @@ sealed trait Result[+E, +T] extends Any {
     case Err(error) => fErr(error)
   }
 
-  /** Returns `rhs` if the result is [[Ok]], otherwise returns this [[Err]]
-    * value.
+  /** Returns `rhs` if the result is `Ok`, otherwise returns this `Err` value.
     *
     * ==Examples==
     *
@@ -1127,11 +1120,10 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => Err(e)
   }
 
-  /** Calls `op` if the [[Result]] is [[Ok]], otherwise returns this [[Err]]
-    * value.
+  /** Calls `op` if the `Result` is `Ok`, otherwise returns this `Err` value.
     *
     * This function can be used for control flow based on `Result` values. Often
-    * used to chain fallible operations that may return [[Err]].
+    * used to chain fallible operations that may return `Err`.
     *
     * An alias of [[flatMap]]
     *
@@ -1161,8 +1153,8 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => Err(e)
   }
 
-  /** Returns `rhs` if the [[Result]] is [[Err]], otherwise returns the this
-    * [[Ok]] value.
+  /** Returns `rhs` if the `Result` is `Err`, otherwise returns the this `Ok`
+    * value.
     *
     * Arguments passed to `or` are eagerly evaluated; if you are passing the
     * result of a function call, it is recommended to use [[orElse]], which is
@@ -1199,7 +1191,7 @@ sealed trait Result[+E, +T] extends Any {
     case _      => this
   }
 
-  /** Calls `op` if the result is [[Err]], otherwise returns this [[Ok]] value.
+  /** Calls `op` if the result is `Err`, otherwise returns this `Ok` value.
     *
     * This function can be used for control flow based on result values.
     *
@@ -1435,7 +1427,7 @@ sealed trait Result[+E, +T] extends Any {
 
   /** Upcasts this `Result[E, T]` to `Result[E, U]`
     *
-    * Normally used when constructing an [[Err]]
+    * Normally used when constructing an `Err`
     *
     * ===Examples===
     *
@@ -1453,7 +1445,7 @@ sealed trait Result[+E, +T] extends Any {
 
   /** Upcasts this `Result[E, T]` to `Result[F, T]`
     *
-    * Normally used when constructing an [[Ok]]
+    * Normally used when constructing an `Ok`
     *
     * ===Examples===
     *
@@ -1472,7 +1464,7 @@ sealed trait Result[+E, +T] extends Any {
 
 object Result {
 
-  /** Allows for construction of a [[Result]]`[E, T]` from an arbitrary type `V`
+  /** Allows for construction of a `Result[E, T]` from an arbitrary type `V`
     *
     * NOTE: [[ToResult]] has a implicits defined for `Either` and `Try`
     *
@@ -1518,7 +1510,7 @@ object Result {
   */
 case class Ok[+E, +T](v: T) extends AnyVal with Result[E, T] {
 
-  /** Returns the contained [[Ok]] value, but never throws
+  /** Returns the contained `Ok` value, but never throws
     *
     * Unlike [[unwrap]], this method is known to never throw. Related:
     * [[Result.intoOk]]
@@ -1543,7 +1535,7 @@ case class Ok[+E, +T](v: T) extends AnyVal with Result[E, T] {
   */
 case class Err[+E, +T](e: E) extends AnyVal with Result[E, T] {
 
-  /** Returns the contained [[Err]] value, but never throws
+  /** Returns the contained `Err` value, but never throws
     *
     * Unlike [[unwrap]], this method is known to never throw. Related:
     * [[Result.intoErr]]

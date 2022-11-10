@@ -64,8 +64,8 @@ case class RichOption[O](self: Option[O]) extends AnyVal {
   def toOkOrElse[E](default: => E): Result[E, O] =
     self.map(Ok(_)).getOrElse(Err(default))
 
-  /** Convert an `Option[`[[Result]]`[E, T]]` into a [[Result]]`[E, Option[T]]`
-    * with the `None` case being treated as an `Ok`
+  /** Convert an `Option[Result[E, T]]` into a `Result[E, Option[T]]` with the
+    * `None` case being treated as an `Ok`
     *
     * ==Examples==
     *
@@ -89,8 +89,8 @@ case class RichOption[O](self: Option[O]) extends AnyVal {
     case None         => Ok(None)
   }
 
-  /** Convert an `Option[`[[Result]]`[E, T]]` into a [[Result]]`[E, Option[T]]`
-    * with the `None` case being treated as an `Err`
+  /** Convert an `Option[Result[E, T]]` into a `Result[E, Option[T]]` with the
+    * `None` case being treated as an `Err`
     *
     * ==Examples==
     *

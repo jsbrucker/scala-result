@@ -11,7 +11,7 @@ package result
   */
 case class RichEither[L, R](self: Either[L, R]) extends AnyVal {
 
-  /** Convert an `Either[L, R]` to a [[Result]]`[L, R]`.
+  /** Convert an `Either[L, R]` to a `Result[L, R]`.
     *
     * This is useful for the cases where usage of `Either` does not follow the
     * convention that the `Right` value is used to represent an `Ok`.
@@ -33,7 +33,7 @@ case class RichEither[L, R](self: Either[L, R]) extends AnyVal {
     case Left(e)   => Err(e)
   }
 
-  /** Convert an `Either[L, R]` to a [[Result]]`[R, L]`.
+  /** Convert an `Either[L, R]` to a `Result[R, L]`.
     *
     * This is useful for the cases where usage of `Either` does not follow the
     * convention that the `Right` value is used to represent an `Ok`.
