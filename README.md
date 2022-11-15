@@ -9,8 +9,8 @@ So we'll have to go a with an unofficial solution.
 
 ## Documentation
 
-* [API Scala 2.13](https://jsbrucker.github.io/scala-result/scala-2.13/api/result)
-* [API Scala 2.12](https://jsbrucker.github.io/scala-result/scala-2.12/api/result)
+* [API Scala 2.13](./scala-2.13/api/result)
+* [API Scala 2.12](./scala-2.12/api/result)
 
 ## Packages
 
