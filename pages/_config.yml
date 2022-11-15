@@ -24,8 +24,9 @@ description: >- # this means to ignore newlines until "baseurl:"
   A Rust inspired Result[+E, +T] type for Scala
 baseurl: "/scala-result" # the subpath of your site, e.g. /blog
 url: "https://jsbrucker.dev" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jsbrucker
-github_username:  jsbrucker
+twitter_username:  jsbrucker
+github_username:   jsbrucker
+linkedin_username: jsbrucker
 
 # Build settings
 theme: minima
