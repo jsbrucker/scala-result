@@ -1,4 +1,4 @@
-package result
+package scala_result
 
 import scala.language.implicitConversions
 

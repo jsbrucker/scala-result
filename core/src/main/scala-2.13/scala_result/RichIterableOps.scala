@@ -1,4 +1,4 @@
-package result
+package scala_result
 
 /** Wrapper for iterable collections of [[Result]]`[E, T]` */
 case class RichIterableOps[E, T, +CC[_], +C](

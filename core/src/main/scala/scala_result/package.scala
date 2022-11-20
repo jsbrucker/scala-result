@@ -19,7 +19,7 @@
   * A simple function returning `Result` might be defined and used like so:
   *
   * {{{
-  * >>> import result._
+  * >>> import scala_result._
   * >>> sealed trait MajorVersion
   * >>> object MajorVersion {
   * ...   case object V1 extends MajorVersion
@@ -54,7 +54,7 @@
   * more succinct.
   *
   * {{{
-  * >>> import result._
+  * >>> import scala_result._
   * >>> val goodResult: Result[String, Int] = Ok(10);
   * >>> val badResult: Result[String, Int] = Err("Some Error")
   *
@@ -229,4 +229,4 @@
   *   This documentation began as a derivative of the
   *   [[https://doc.rust-lang.org/std/result/ Rust Result<T, E> documentation]]
   */
-package object result {}
+package object scala_result {}

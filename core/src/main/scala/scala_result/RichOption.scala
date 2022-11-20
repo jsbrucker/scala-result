@@ -1,4 +1,4 @@
-package result
+package scala_result
 
 /** Wrapper for `Option`
   *

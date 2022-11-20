@@ -1,4 +1,4 @@
-package result
+package scala_result
 
 case class RichAny[A](self: A) extends AnyVal {
 
