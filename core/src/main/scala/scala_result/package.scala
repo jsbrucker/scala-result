@@ -211,19 +211,16 @@
   * ==Implicits==
   *
   * Extension methods are provided to facilitate conversion of several types to
-  * a `Result`.
-  *   - `Option` See: [[Extensions.toRichOption]]
-  *   - `Either` See: [[Extensions.toRichEither]]
-  *   - `Try` See: [[Extensions.toRichTry]]
-  *   - Finally: [[Extensions.toRichAny]] adds [[RichAny.asOk asOk]] and
-  *     [[RichAny.asErr asErr]] methods to any type to wrap values in `Ok` or
-  *     `Err` respectively.
-  *
-  * When using Scala 2.13 [[Extensions.toRichIterableOps]] is available for
-  * processing collections of `Result`s.
-  *
-  * The implicit defs within [[ImplicitConversions]] may be imported to
-  * facilitate treating custom ADTs as `Result`s and vice-versa.
+  * a `Result`. They can imported using `import scala_result.implicits._`
+  *   - All types get some extension methods out of the box. This includes:
+  *     - [[extensions.all.Ops.asOk asOk]]
+  *     - [[extensions.all.Ops.asErr asErr]]
+  *     - [[extensions.all.Ops.toResult toResult]] - For types with an implicit
+  *       definition of [[ToResult]] in scope.
+  *   - `Option` gets a number of additional helpers. See:
+  *     [[extensions.option.Ops]]
+  *   - When using Scala 2.13 [[extensions.iterable_ops.Ops]] is available for
+  *     processing collections of `Result`s.
   *
   * @note
   *   This documentation began as a derivative of the
