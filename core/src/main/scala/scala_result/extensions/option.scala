@@ -3,21 +3,11 @@ package extensions
 
 object option {
 
-  /** Wrapper for `Option`
-    *
-    * ==Examples==
-    *
-    * {{{
-    * >>> import scala_result._
-    * >>> import scala_result.extensions.option._
-    *
-    * >>> Ops(Some(1)).toResult(2)
-    * Ok(1)
-    * }}}
-    */
+  /** Extension methods for `Option` */
   implicit class Ops[V](self: Option[V]) {
 
-    /** An alias of [[toOkOrElse]]
+    /** Convert an `Option[E]` into a `Result[E, Unit]` using `Unit` for the
+      * `Ok` value in the `None` case.
       *
       * ==Examples==
       *
@@ -25,18 +15,41 @@ object option {
       * >>> import scala_result._
       * >>> import scala_result.extensions.option._
       *
-      * >>> None.toResult(1)
-      * Err(1)
+      * >>> None.toErr == Ok.unit
+      * true
       *
-      * >>> Some(2).toResult(1)
+      * >>> Some(2).toErr
+      * Err(2)
+      * }}}
+      */
+    def toErr: Result[V, Unit] = self match {
+      case Some(e) => Err(e)
+      case None    => Ok.unit
+    }
+
+    /** Convert an `Option[T]` into a `Result[Unit, T]` using `Unit` for the
+      * `Err` value in the `None` case.
+      *
+      * ==Examples==
+      *
+      * {{{
+      * >>> import scala_result._
+      * >>> import scala_result.extensions.option._
+      *
+      * >>> None.toOk == Err.unit
+      * true
+      *
+      * >>> Some(2).toOk
       * Ok(2)
       * }}}
       */
-    def toResult[E](default: => E): Result[E, V] =
-      toOkOrElse(default)
+    def toOk: Result[Unit, V] = self match {
+      case Some(v) => Ok(v)
+      case None    => Err.unit
+    }
 
-    /** Convert an `Option[E]` into a Result[E, T] using `default` for the `Ok`
-      * value in the `None` case.
+    /** Convert an `Option[E]` into a `Result[E, T]` using `default` for the
+      * `Ok` value in the `None` case.
       *
       * ==Examples==
       *
@@ -51,11 +64,13 @@ object option {
       * Err(2)
       * }}}
       */
-    def toErrOrElse[T](default: => T): Result[V, T] =
-      self.map(Err(_)).getOrElse(Ok(default))
+    def toErrOrElse[T](default: => T): Result[V, T] = self match {
+      case Some(e) => Err(e)
+      case None    => Ok(default)
+    }
 
-    /** Convert an `Option[T]` into a Result[E, T] using `default` for the `Err`
-      * value in the `None` case.
+    /** Convert an `Option[T]` into a `Result[E, T]` using `default` for the
+      * `Err` value in the `None` case.
       *
       * ==Examples==
       *
@@ -70,8 +85,10 @@ object option {
       * Ok(2)
       * }}}
       */
-    def toOkOrElse[E](default: => E): Result[E, V] =
-      self.map(Ok(_)).getOrElse(Err(default))
+    def toOkOrElse[E](default: => E): Result[E, V] = self match {
+      case Some(v) => Ok(v)
+      case None    => Err(default)
+    }
 
     /** Convert an `Option[Result[E, T]]` into a `Result[E, Option[T]]` with the
       * `None` case being treated as an `Ok`
