@@ -16,12 +16,10 @@ object ToResult {
     * ===Examples===
     *
     * {{{
-    * >>> val right: Either[String, Int] = Right(1)
-    * >>> Result(right) == Ok(1)
+    * >>> Result(Right(1)) == Ok(1)
     * true
     *
-    * >>> val left: Either[String, Int] = Left("Error")
-    * >>> Result(left) == Err("Error")
+    * >>> Result(Left("Error")) == Err("Error")
     * true
     * }}}
     */
@@ -35,18 +33,36 @@ object ToResult {
     * ===Examples===
     *
     * {{{
-    * >>> val success: scala.util.Try[Int] = scala.util.Success(1)
-    * >>> Result(success) == Ok(1)
+    * >>> Result(scala.util.Success(1)) == Ok(1)
     * true
     *
     * >>> val ex: Exception = new Exception("Error")
-    * >>> val failure: scala.util.Try[Int] = scala.util.Failure(ex)
-    * >>> Result(failure) == Err(ex)
+    * >>> Result(scala.util.Failure(ex)) == Err(ex)
     * true
     * }}}
     */
   implicit def tryToResult[T]: ToResult[Throwable, T, scala.util.Try[T]] = {
     case scala.util.Success(ok) => Ok(ok)
     case scala.util.Failure(e)  => Err(e)
+  }
+
+  /** Converts `Boolean` into `Result[Unit, Unit]`
+    *
+    *   - `true` is `Ok`
+    *   - `false is `Err`
+    *
+    * ===Examples===
+    *
+    * {{{
+    * >>> Result(true) == Ok.unit
+    * true
+    *
+    * >>> Result(false) == Err.unit
+    * true
+    * }}}
+    */
+  implicit val booleanToResult: ToResult[Unit, Unit, Boolean] = {
+    case true  => Ok.unit
+    case false => Err.unit
   }
 }
