@@ -190,7 +190,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * @group Query
     */
-  def contains[U >: T](x: U): Boolean = this match {
+  def contains[U >: T](x: => U): Boolean = this match {
     case Err(_) => false
     case Ok(v)  => v == x
   }
@@ -215,7 +215,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * @group Query
     */
-  def containsErr[U >: E](x: U): Boolean = this match {
+  def containsErr[U >: E](x: => U): Boolean = this match {
     case Err(e) => x == e
     case Ok(_)  => false
   }
@@ -238,7 +238,7 @@ sealed trait Result[+E, +T] extends Any {
     * @group Extract
     */
   @throws(classOf[RuntimeException])
-  def expect(msg: String): T = this match {
+  def expect(msg: => String): T = this match {
     case Ok(t)  => t
     case Err(e) => Result.unwrapFailed(msg, e)
   }
@@ -277,10 +277,6 @@ sealed trait Result[+E, +T] extends Any {
 
   /** Returns the contained `Ok` value or a provided default.
     *
-    * Arguments passed to [[Result.unwrapOr unwrapOr]] are eagerly evaluated; if
-    * you are passing the result of a function call, it is recommended to use
-    * [[Result.unwrapOrElse unwrapOrElse]], which is lazily evaluated.
-    *
     * ==Examples==
     *
     * {{{
@@ -297,7 +293,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * @group Extract
     */
-  def unwrapOr[U >: T](default: U): U = this match {
+  def unwrapOr[U >: T](default: => U): U = this match {
     case Ok(t)  => t
     case Err(_) => default
   }
@@ -339,7 +335,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * @group Extract
     */
-  def expectErr(msg: String): E = this match {
+  def expectErr(msg: => String): E = this match {
     case Ok(t)  => Result.unwrapFailed(msg, t)
     case Err(e) => e
   }
@@ -838,11 +834,7 @@ sealed trait Result[+E, +T] extends Any {
   }
 
   /** Returns the provided default (if `Err`), or applies a function to the
-    * contained value (if `Ok`),
-    *
-    * Arguments passed to `mapOr` are eagerly evaluated; if you are passing the
-    * result of a function call, it is recommended to use [[mapOrElse]], which
-    * is lazily evaluated.
+    * contained value (if `Ok`).
     *
     * ==Examples==
     *
@@ -919,11 +911,7 @@ sealed trait Result[+E, +T] extends Any {
   }
 
   /** Returns the provided default (if `Ok`), or applies a function to the
-    * contained value (if `Err`),
-    *
-    * Arguments passed to `mapErrOr` are eagerly evaluated; if you are passing
-    * the result of a function call, it is recommended to use [[mapErrOrElse]],
-    * which is lazily evaluated.
+    * contained value (if `Err`).
     *
     * ==Examples==
     *
@@ -939,7 +927,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * @group Transform
     */
-  def mapErrOr[F](default: F, f: E => F): F = this match {
+  def mapErrOr[F](default: => F, f: E => F): F = this match {
     case Ok(_)  => default
     case Err(e) => f(e)
   }
@@ -1108,7 +1096,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * @group Boolean
     */
-  def and[F >: E, U >: T](rhs: Result[F, U]): Result[F, U] = this match {
+  def and[F >: E, U >: T](rhs: => Result[F, U]): Result[F, U] = this match {
     case Ok(_)  => rhs
     case Err(e) => Err(e)
   }
@@ -1149,10 +1137,6 @@ sealed trait Result[+E, +T] extends Any {
   /** Returns `rhs` if the `Result` is `Err`, otherwise returns the this `Ok`
     * value.
     *
-    * Arguments passed to `or` are eagerly evaluated; if you are passing the
-    * result of a function call, it is recommended to use [[orElse]], which is
-    * lazily evaluated.
-    *
     * ==Examples==
     *
     * {{{
@@ -1179,7 +1163,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * @group Boolean
     */
-  def or[F >: E, U >: T](rhs: Result[F, U]): Result[F, U] = this match {
+  def or[F >: E, U >: T](rhs: => Result[F, U]): Result[F, U] = this match {
     case Err(_) => rhs
     case _      => this
   }

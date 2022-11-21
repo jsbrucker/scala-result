@@ -9,7 +9,7 @@ object ImplicitConversions {
 
   /** Converts a `V` to a `Result[E, T]`
     *
-    * Usage: `import result.ImplicitConversions.toResult`
+    * Usage: `import scala_result.ImplicitConversions.toResult`
     */
   implicit def toResult[E, T, V](value: V)(implicit
       ev: ToResult[E, T, V]
@@ -17,7 +17,7 @@ object ImplicitConversions {
 
   /** Converts a `Result[E, T]` to a `V`
     *
-    * Usage: `import result.ImplicitConversions.fromResult`
+    * Usage: `import scala_result.ImplicitConversions.fromResult`
     */
   implicit def fromResult[E, T, V](result: Result[E, T])(implicit
       ev: FromResult[E, T, V]
