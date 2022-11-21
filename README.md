@@ -1,3 +1,5 @@
+# Scala-Result
+
 Rust style `Result` type for Scala
 
 ## Context
@@ -9,10 +11,10 @@ So we'll have to go a with an unofficial solution.
 
 ## Documentation
 
-* [API Scala 2.13](./scala-2.13/api/result)
-* [API Scala 2.12](./scala-2.12/api/result)
+* [API Scala 2.13](./scala-2.13/api/scala_result)
+* [API Scala 2.12](./scala-2.12/api/scala_result)
 
 ## Packages
 
-Pre-packaged jars are not yet available, but there are plans to make them available in the coming weeks ETA Dec-2022.
+Pre-packaged jars are not yet available, but there are plans to make them available in the coming weeks. ETA Dec-2022.
 
