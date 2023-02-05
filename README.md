@@ -13,8 +13,3 @@ So we'll have to go a with an unofficial solution.
 
 * [API Scala 2.13](https://jsbrucker.dev/scala-result/scala-2.13/api/scala_result)
 * [API Scala 2.12](https://jsbrucker.dev/scala-result/scala-2.12/api/scala_result)
-
-## Packages
-
-Pre-packaged jars are not yet available, but there are plans to make them available in the coming weeks. ETA Dec-2022.
-
