@@ -213,7 +213,8 @@ package dev.jsbrucker
   * ==Implicits==
   *
   * Extension methods are provided to facilitate conversion of several types to
-  * a `Result`. They can imported using `import dev.jsbrucker.result.implicits._`
+  * a `Result`. They can imported using `import
+  * dev.jsbrucker.result.implicits._`
   *   - All types get some extension methods out of the box. This includes:
   *     - [[extensions.all.Ops.asOk asOk]]
   *     - [[extensions.all.Ops.asErr asErr]]

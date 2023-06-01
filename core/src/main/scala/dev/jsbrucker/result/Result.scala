@@ -5,7 +5,8 @@ import scala.annotation.implicitNotFound
 /** A Rust `Result<T, E>` inspired interface for handling results.
   *
   * `Result` is a type that represents either success ([[Ok]]) or failure
-  * ([[Err]]). See the [[dev.jsbrucker.result package documentation]] for details.
+  * ([[Err]]). See the [[dev.jsbrucker.result package documentation]] for
+  * details.
   *
   * @groupname Query Querying the variant
   * @groupprio Query 0
