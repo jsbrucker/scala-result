@@ -1,4 +1,4 @@
-name := "scala-result"
+name := "result"
 ThisBuild / organization := "dev.jsbrucker"
 ThisBuild / version := "0.1.0-SNAPSHOT"
 
