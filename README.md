@@ -11,5 +11,5 @@ So we'll have to go a with an unofficial solution.
 
 ## Documentation
 
-* [API Scala 2.13](https://jsbrucker.dev/scala-result/scala-2.13/api/scala_result)
-* [API Scala 2.12](https://jsbrucker.dev/scala-result/scala-2.12/api/scala_result)
+* [API Scala 2.13](https://jsbrucker.dev/scala-result/scala-2.13/api/dev/jsbrucker/result)
+* [API Scala 2.12](https://jsbrucker.dev/scala-result/scala-2.12/api/dev/jsbrucker/result)

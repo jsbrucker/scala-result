@@ -1,4 +1,4 @@
-package scala_result
+package dev.jsbrucker.result
 
 /** Implicit definitions used to add extension methods */
 object implicits

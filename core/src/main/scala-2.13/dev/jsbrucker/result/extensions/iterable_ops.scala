@@ -1,4 +1,4 @@
-package scala_result
+package dev.jsbrucker.result
 package extensions
 
 object iterable_ops {
@@ -15,8 +15,8 @@ object iterable_ops {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.iterable_ops._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.iterable_ops._
       *
       * >>> val (oks, errs) = Vector(Ok(1), Err("A"), Ok(2), Ok(3), Err("B")).partitionResult
       *
@@ -35,7 +35,7 @@ object iterable_ops {
     }
   }
 
-  private[scala_result] trait Syntax {
+  private[result] trait Syntax {
     implicit class iterableOpsSyntax[E, T, CC[_], C](
         value: scala.collection.IterableOps[Result[E, T], CC, C]
     ) extends iterable_ops.Ops(value)

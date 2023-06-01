@@ -1,4 +1,4 @@
-package scala_result
+package dev.jsbrucker.result
 package extensions
 
 object option {
@@ -12,8 +12,8 @@ object option {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.option._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.option._
       *
       * >>> None.toErr == Ok.unit
       * true
@@ -33,8 +33,8 @@ object option {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.option._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.option._
       *
       * >>> None.toOk == Err.unit
       * true
@@ -54,8 +54,8 @@ object option {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.option._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.option._
       *
       * >>> None.toErrOrElse(1)
       * Ok(1)
@@ -75,8 +75,8 @@ object option {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.option._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.option._
       *
       * >>> None.toOkOrElse(1)
       * Err(1)
@@ -96,8 +96,8 @@ object option {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.option._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.option._
       *
       * >>> Some(Ok(1)).transposeOk
       * Ok(Some(1))
@@ -122,8 +122,8 @@ object option {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.option._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.option._
       *
       * >>> Some(Err(1)).transposeErr
       * Err(Some(1))
@@ -143,7 +143,7 @@ object option {
     }
   }
 
-  private[scala_result] trait Syntax {
+  private[result] trait Syntax {
     implicit class Ops[V](value: Option[V]) extends option.Ops[V](value)
   }
 }

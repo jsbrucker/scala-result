@@ -1,3 +1,5 @@
+package dev.jsbrucker
+
 /** =Use Case=
   *
   * Error handling with the [[Result]] type.
@@ -19,7 +21,7 @@
   * A simple function returning `Result` might be defined and used like so:
   *
   * {{{
-  * >>> import scala_result._
+  * >>> import dev.jsbrucker.result._
   * >>> sealed trait MajorVersion
   * >>> object MajorVersion {
   * ...   case object V1 extends MajorVersion
@@ -54,7 +56,7 @@
   * more succinct.
   *
   * {{{
-  * >>> import scala_result._
+  * >>> import dev.jsbrucker.result._
   * >>> val goodResult: Result[String, Int] = Ok(10);
   * >>> val badResult: Result[String, Int] = Err("Some Error")
   *
@@ -211,7 +213,7 @@
   * ==Implicits==
   *
   * Extension methods are provided to facilitate conversion of several types to
-  * a `Result`. They can imported using `import scala_result.implicits._`
+  * a `Result`. They can imported using `import dev.jsbrucker.result.implicits._`
   *   - All types get some extension methods out of the box. This includes:
   *     - [[extensions.all.Ops.asOk asOk]]
   *     - [[extensions.all.Ops.asErr asErr]]
@@ -226,4 +228,4 @@
   *   This documentation began as a derivative of the
   *   [[https://doc.rust-lang.org/std/result/ Rust Result<T, E> documentation]]
   */
-package object scala_result {}
+package object result {}

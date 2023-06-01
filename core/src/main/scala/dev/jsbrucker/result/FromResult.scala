@@ -1,4 +1,4 @@
-package scala_result
+package dev.jsbrucker.result
 
 /** Used to convert a `Result[E, T]` to a value of type `V`
   *

@@ -1,4 +1,4 @@
-package scala_result
+package dev.jsbrucker.result
 package extensions
 
 object all {
@@ -10,8 +10,8 @@ object all {
       *
       * The `ToResult` type class is predefined for `Either` and `Try`
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.all._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.all._
       *
       * >>> Right(1).toResult == Ok(1)
       * true
@@ -28,8 +28,8 @@ object all {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.all._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.all._
       * >>> 1.asOk == Ok(1)
       * true
       * }}}
@@ -41,8 +41,8 @@ object all {
       * ==Examples==
       *
       * {{{
-      * >>> import scala_result._
-      * >>> import scala_result.extensions.all._
+      * >>> import dev.jsbrucker.result._
+      * >>> import dev.jsbrucker.result.extensions.all._
       * >>> "Error".asErr == Err("Error")
       * true
       * }}}
@@ -50,7 +50,7 @@ object all {
     def asErr[T]: Err[V, T] = Err(self)
   }
 
-  private[scala_result] trait Syntax {
+  private[result] trait Syntax {
     implicit class Ops[V](value: V) extends all.Ops[V](value)
   }
 }
