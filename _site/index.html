@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Scala Result | A Rust inspired Result[+E, +T] type for Scala</title>
+<meta name="generator" content="Jekyll v3.9.2" />
+<meta property="og:title" content="Scala Result" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A Rust inspired Result[+E, +T] type for Scala" />
+<meta property="og:description" content="A Rust inspired Result[+E, +T] type for Scala" />
+<link rel="canonical" href="http://localhost:4000/scala-result/" />
+<meta property="og:url" content="http://localhost:4000/scala-result/" />
+<meta property="og:site_name" content="Scala Result" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Scala Result" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"A Rust inspired Result[+E, +T] type for Scala","headline":"Scala Result","name":"Scala Result","url":"http://localhost:4000/scala-result/"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/scala-result/assets/main.css"><link type="application/atom+xml" rel="alternate" href="http://localhost:4000/scala-result/feed.xml" title="Scala Result" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/scala-result/">Scala Result</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/scala-result/about/">About</a><a class="page-link" href="/scala-result/"></a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div class="home"><h1 class="page-heading"></h1><h1 id="scala-result">Scala-Result</h1>
+
+<p>Rust style <code class="language-plaintext highlighter-rouge">Result</code> type for Scala</p>
+
+<h2 id="context">Context</h2>
+
+<p>In the opinion of the author <code class="language-plaintext highlighter-rouge">Either</code> and <code class="language-plaintext highlighter-rouge">Try</code> are inferior to the semantic benefits of a dedicated <code class="language-plaintext highlighter-rouge">Result</code> type.
+Unfortunately, prior discussions regarding the addition of a <code class="language-plaintext highlighter-rouge">Result</code> type to the standard library have not borne fruit. 
+<a href="https://contributors.scala-lang.org/t/pre-sip-proposal-of-introducing-a-rust-like-type-result/3497">Pre-SIP: Rust-like “Result” Proposal</a>
+So we’ll have to go a with an unofficial solution.</p>
+
+<h2 id="documentation">Documentation</h2>
+
+<ul>
+  <li><a href="https://jsbrucker.dev/scala-result/scala-2.13/api/dev/jsbrucker/result">API Scala 2.13</a></li>
+  <li><a href="https://jsbrucker.dev/scala-result/scala-2.12/api/dev/jsbrucker/result">API Scala 2.12</a></li>
+</ul>
+
+<h2 id="usage">Usage</h2>
+
+<h3 id="sbt">SBT</h3>
+<p>Add the following line to the <code class="language-plaintext highlighter-rouge">build.sbt</code> files:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">"dev.jsbrucker"</span> <span class="o">%%</span> <span class="s">"result-core"</span> <span class="o">%</span> <span class="s">"1.0.0"</span>
+</code></pre></div></div>
+
+<h3 id="bazel-using-maven_install">Bazel (using <code class="language-plaintext highlighter-rouge">maven_install</code>)</h3>
+<p>Add <code class="language-plaintext highlighter-rouge">"dev.jsbrucker:result-core_2_13:1.0.0"</code> to the list of artifacts.</p>
+
+<h3 id="maven">Maven</h3>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>dev.jsbrucker<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>result-core_2.13<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</code></pre></div></div>
+
+</div>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/scala-result/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Scala Result</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Scala Result</li><li><a class="u-email" href="mailto:scala-result@jsbrucker.dev">scala-result@jsbrucker.dev</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jsbrucker"><svg class="svg-icon"><use xlink:href="/scala-result/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jsbrucker</span></a></li><li><a href="https://www.linkedin.com/in/jsbrucker"><svg class="svg-icon"><use xlink:href="/scala-result/assets/minima-social-icons.svg#linkedin"></use></svg> <span class="username">jsbrucker</span></a></li><li><a href="https://www.twitter.com/jsbrucker"><svg class="svg-icon"><use xlink:href="/scala-result/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">jsbrucker</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>A Rust inspired Result[+E, +T] type for Scala</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
