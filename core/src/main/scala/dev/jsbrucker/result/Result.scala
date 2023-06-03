@@ -1051,7 +1051,49 @@ sealed trait Result[+E, +T] extends Any {
       ev: T <:< Result[F, U]
   ): Result[F, U] = andThen(ev)
 
-  /** Converts from `Result[E, T, Result[T, E]]` to `Result[T]`
+  /** Converts from `Result[E, Option[T]]` to `Result[E, T]`
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Int, Option[String]] = Ok(Some("hello"))
+    * >>> x.flatten(-1)
+    * Ok(hello)
+    *
+    * >>> val y: Result[Int, Option[String]] = Ok(None)
+    * >>> y.flatten(-1)
+    * Err(-1)
+    *
+    * >>> val z: Result[Int, Option[String]] = Err(6)
+    * >>> z.flatten(-1)
+    * Err(6)
+    *
+    * // Flattening only removes one level of nesting at a time:
+    * >>> val multi: Result[Int, Option[Option[String]]] = Ok(Some(Some("hello")))
+    *
+    * >>> multi.flatten(-1)
+    * Ok(Some(hello))
+    *
+    * >>> multi.flatten(-1).flatten(-1)
+    * Ok(hello)
+    * }}}
+    *
+    * @group Transform
+    */
+  def flatten[F >: E, U](defaultErr: => F)(implicit
+      @implicitNotFound("${T} is not a Option[${U}]")
+      ev: T <:< Option[U]
+  ): Result[F, U] =
+    this match {
+      case Ok(t) =>
+        ev(t) match {
+          case Some(u) => Ok(u)
+          case None    => Err(defaultErr)
+        }
+      case Err(e) => Err(e)
+    }
+
+  /** Converts from `Result[Result[E, T], T]` to `Result[E, T]`
     *
     * ==Examples==
     *
@@ -1084,6 +1126,47 @@ sealed trait Result[+E, +T] extends Any {
       @implicitNotFound("${E} is not a Result[${F}, ${U}]")
       ev: E <:< Result[F, U]
   ): Result[F, U] = orElse(ev)
+
+  /** Converts from `Result[Option[E], T]` to `Result[E, T]`
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val x: Result[Option[String], Int] = Err(Some("Some Error"))
+    * >>> x.flattenErr(-1)
+    * Err(Some Error)
+    *
+    * >>> val y: Result[Option[String], Int] = Err(None)
+    * >>> y.flattenErr(-1)
+    * Ok(-1)
+    *
+    * >>> val z: Result[Option[String], Int] = Ok(6)
+    * >>> z.flattenErr(-1)
+    * Ok(6)
+    *
+    * // Flattening only removes one level of nesting at a time:
+    * >>> val multi: Result[Option[Option[String]], Int] = Err(Some(Some("Some Error")))
+    *
+    * >>> multi.flattenErr(-1)
+    * Err(Some(Some Error))
+    *
+    * >>> multi.flattenErr(-1).flattenErr(-2)
+    * Err(Some Error)
+    * }}}
+    *
+    * @group Transform
+    */
+  def flattenErr[F, U >: T](defaultOk: => U)(implicit
+      @implicitNotFound("${E} is not a Option[${F}]")
+      ev: E <:< Option[F]
+  ): Result[F, U] = this match {
+    case Err(e) =>
+      ev(e) match {
+        case Some(f) => Err(f)
+        case None    => Ok(defaultOk)
+      }
+    case Ok(t) => Ok(t)
+  }
 
   /** An alias of [[flatten]] for consistency with `Either` API, analogous to
     * `joinRight`
