@@ -834,6 +834,34 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => Err(e)
   }
 
+  /** Maps a `Result[E, Unit]` to `Result[E, U]` by setting an `Ok` value,
+    * leaving an `Err` value untouched.
+    *
+    * This function can be used to set an initial value `Ok` value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Ok.unit.mapUnit(1)
+    * Ok(1)
+    *
+    * >>> Ok.unit.mapUnit(2)
+    * Ok(2)
+    *
+    * >>> Err("error").mapUnit(1)
+    * Err(error)
+    * }}}
+    *
+    * @group Transform
+    */
+  def mapUnit[U](okValue: => U)(implicit
+      @implicitNotFound("${T} is not Unit") ev: T <:< Unit
+  ): Result[E, U] =
+    this match {
+      case Ok(_)  => Ok(okValue)
+      case Err(e) => Err(e)
+    }
+
   /** Returns the provided default (if `Err`), or applies a function to the
     * contained value (if `Ok`).
     *
@@ -851,7 +879,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * @group Transform
     */
-  def mapOr[U](default: U, f: T => U): U = this match {
+  def mapOr[U](default: => U, f: T => U): U = this match {
     case Ok(t)  => f(t)
     case Err(_) => default
   }
@@ -910,6 +938,35 @@ sealed trait Result[+E, +T] extends Any {
     case Ok(t)  => Ok(t)
     case Err(e) => Err(op(e))
   }
+
+  /** Maps a `Result[Unit, T]` to `Result[F, T]` by setting an `Err` value,
+    * leaving an `Ok` value untouched.
+    *
+    * This function can be used to set an initial value `Err` value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Err.unit.mapUnitErr(1)
+    * Err(1)
+    *
+    * >>> Err.unit.mapUnitErr(2)
+    * Err(2)
+    *
+    * >>> Ok("value").mapUnitErr(1)
+    * Ok(value)
+    * }}}
+    *
+    * @group Transform
+    */
+  def mapUnitErr[F](errValue: => F)(implicit
+      @implicitNotFound("${T} is not Unit")
+      ev: E <:< Unit
+  ): Result[F, T] =
+    this match {
+      case Err(_)    => Err(errValue)
+      case Ok(value) => Ok(value)
+    }
 
   /** Returns the provided default (if `Ok`), or applies a function to the
     * contained value (if `Err`).
