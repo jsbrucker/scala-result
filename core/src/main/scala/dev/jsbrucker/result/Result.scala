@@ -373,6 +373,49 @@ sealed trait Result[+E, +T] extends Any {
     case Err(e) => e
   }
 
+  /** Returns the contained `Err` value or a provided default.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> val default = "default"
+    *
+    * >>> val x: Result[String, Int] = Ok(9)
+    * >>> x.unwrapErrOr(default)
+    * default
+    *
+    * >>> val y: Result[String, Int] = Err("error")
+    * >>> y.unwrapErrOr(default)
+    * error
+    * }}}
+    *
+    * @group Extract
+    */
+  def unwrapErrOr[F >: E](default: => F): F = this match {
+    case Err(e)  => e
+    case Ok(_) => default
+  }
+
+  /** Returns the contained `Err` value or computes it from a provided function
+    * applied to the `Ok` value.
+    *
+    * ==Examples==
+    *
+    * {{{
+    * >>> Ok[String, Int](2).unwrapErrOrElse(_.toString)
+    * 2
+    *
+    * >>> Err("foo").unwrapErrOrElse(_.toString)
+    * foo
+    * }}}
+    *
+    * @group Extract
+    */
+  def unwrapErrOrElse[F >: E](op: T => F): F = this match {
+    case Err(e)  => e
+    case Ok(t) => op(t)
+  }
+
   /** Returns the contained `Ok` value if an `Ok`, and the contained `Err` value
     * if an `Err`
     *

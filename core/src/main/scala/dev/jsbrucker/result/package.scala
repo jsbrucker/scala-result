@@ -167,6 +167,9 @@ package dev.jsbrucker
   *
   *   - [[Result.expectErr expectErr]] panics with a provided custom message
   *   - [[Result.unwrapErr unwrapErr]] panics with a generic message
+  *   - [[Result.unwrapErrOr unwrapErrOr]] returns the provided default value
+  *   - [[Result.unwrapErrOrElse unwrapErrOrElse]] returns the result of evaluating
+  *     the provided function
   *
   * ==Boolean operators==
   *
