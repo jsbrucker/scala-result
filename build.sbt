@@ -1,5 +1,5 @@
 name := "result"
-ThisBuild / organization := "dev.jsbrucker"
+ThisBuild / organization := "dev.jsbrucker.result"
 ThisBuild / version := "1.0.0"
 
 lazy val scala213 = "2.13.10"
@@ -16,6 +16,7 @@ lazy val root = (project in file("."))
 
 lazy val core = (project in file("core"))
   .settings(
+    name := "Result Core",
     moduleName := "result-core",
     crossScalaVersions := supportedScalaVersions,
     Compile / doc / scalacOptions += "-groups",
