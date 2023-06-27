@@ -345,7 +345,7 @@ sealed trait Result[+E, +T] extends Any {
     *
     * Because this function may panic, its use is generally discouraged.
     * Instead, prefer to use pattern matching and handle the `Ok` case
-    * explicitly.
+    * explicitly, or call [[unwrapErrOr]] or [[unwrapErrOrElse]].
     *
     * ==Throws==
     *
